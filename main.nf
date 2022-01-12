@@ -2,9 +2,9 @@
 
 /*
 ================================================================================
-    Strain-specific analysis of bacterial RNA-Seq data
+    strain_seq: strain-specific analysis of bacterial RNA-Seq data
 ================================================================================
-    Github : [url]
+    Github : [github.com/adamd3/strain_seq]
 */
 def helpMessage() {
     log.info"""
