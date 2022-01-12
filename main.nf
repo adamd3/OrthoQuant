@@ -10,7 +10,7 @@ def helpMessage() {
     log.info"""
     Usage:
     The typical command for running the pipeline is as follows:
-      nextflow run pipeline_name --data_dir [dir] --metadata hzi_meta.txt -profile docker
+      nextflow run strain_seq --data_dir [dir] --meta_file [file] --multifasta_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
 
     Mandatory arguments:
       --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
