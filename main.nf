@@ -95,7 +95,7 @@ process MERGE_METADATA {
 
     script:
     """
-    python3 merge_metadata.py $metadata $data_dir metadata_merged.tsv
+    merge_metadata.py $metadata $data_dir metadata_merged.tsv
     """
 }
 
@@ -119,7 +119,7 @@ process MAKE_CLONE_FASTA {
 
      script:
      """
-     python3 make_clone_fasta.py $multifasta $gpa ./
+     make_clone_fasta.py $multifasta $gpa ./
      """
  }
 
@@ -157,7 +157,7 @@ process MAKE_KALLISTO_INDEX {
 ch_meta_merged
     .splitCsv(header:true, sep:'\t')
     .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
-    .into { ch_raw_reads_trimgalore }
+    .set { ch_raw_reads_trimgalore }
 
 
 
