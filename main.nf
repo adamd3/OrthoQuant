@@ -49,13 +49,13 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 
 /*
 ================================================================================
-    Validate inputs
+    Validate inputs and create channels for files
 ================================================================================
 */
 
-if (params.data_dir) {
-    ch_data_dir = file(params.data_dir, checkIfExists: true)
-} else { exit 1, 'Data directory not specified!' }
+// if (params.data_dir) {
+//     ch_data_dir = file(params.data_dir, checkIfExists: true)
+// } else { exit 1, 'Data directory not specified!' }
 
 if (params.meta_file) {
     ch_metadata = file(params.meta_file, checkIfExists: true)
@@ -88,14 +88,13 @@ process MERGE_METADATA {
 
     input:
     path metadata from ch_metadata
-    path data_dir from ch_data_dir
 
     output:
     path 'metadata_merged.tsv' into ch_meta_merged
 
     script:
     """
-    merge_metadata.py $metadata $data_dir metadata_merged.tsv
+    merge_metadata.py $metadata ${params.data_dir} metadata_merged.tsv
     """
 }
 
