@@ -114,7 +114,7 @@ process MAKE_CLONE_FASTA {
      path gpa from ch_gpa_file
 
      output:
-     path '*.fna' into ch_clone_fasta
+     path '*.fna', emit: clone_fasta
 
      script:
      """
@@ -131,10 +131,10 @@ process MAKE_KALLISTO_INDEX {
     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
 
     input:
-    path ('clone_fasta/*') from ch_clone_fasta.collect()
+    path clone_fasta
 
     output:
-    path ('*.kidx') into ch_kallisto_idx
+    path '*.kidx' into ch_kallisto_idx
 
     script:
     """
