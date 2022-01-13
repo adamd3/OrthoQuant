@@ -163,7 +163,7 @@ process MAKE_KALLISTO_INDEX {
 
     script:
     """
-    kallisto index -i $name.kidx ${clone_fasta}
+    kallisto index -i ${name}.kidx ${clone_fasta}
     """
 }
 
