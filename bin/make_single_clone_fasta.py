@@ -30,8 +30,8 @@ def make_fasta(multifasta_file, gene_presence_absence, strain_name):
     if strain_name in colnames:
         strain_genes = csv_data[strain_name].tolist()
         genes_present = [gene for gene in strain_genes if gene in gene_seq.keys()]
-        outf2 = os.path.normpath(strain_name+'.fna')
-        f = open(outf2, 'a')
+        outf = os.path.normpath(strain_name+'_ss.fna')
+        f = open(outf, 'a')
         for gene in genes_present:
             seq = '\n'.join(textwrap.wrap(str(gene_seq[gene]), 50))
             f.write(">"+gene+"\n"+seq+"\n")
