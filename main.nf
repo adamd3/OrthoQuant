@@ -112,10 +112,15 @@ ch_meta_merged
     .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
     .set { ch_raw_reads_trimgalore }
 
+// ch_meta_merged
+//     .splitCsv(header:true, sep:'\t')
+//     .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
+//     .set { ch_clone_fasta_init }
+
 ch_meta_merged
-    .splitCsv(header:true, sep:'\t')
-    .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
-    .set { ch_clone_fasta_init }
+    .splitCsv(header: true, sep:'\t')
+    .map { row -> [ row.sample_id ] }
+    .set { ch_clone_ids }
 
 
 /*
@@ -132,7 +137,7 @@ process MAKE_CLONE_FASTA {
      path multifasta from ch_multifasta_file
      path faidx from ch_faidx_file // this prevents pyfaidx from indexing each time
      path gpa from ch_gpa_file
-     tuple val(name), path(clone_fasta) from ch_clone_fasta_init
+     val name from ch_clone_ids
 
      output:
      tuple val(name), path('*.fna') into ch_clone_fasta

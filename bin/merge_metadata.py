@@ -31,8 +31,6 @@ def merge_meta(metadata_file, data_dir, outf):
     ]
     merged_meta['fastq'] = [
         os.path.join(data_dir, 'fastq', s+'_T1.fastq.gz') for s in merged_meta['RNA_sample_id'].tolist()]
-    merged_meta['fasta'] = [
-        os.path.join(s+'.fna') for s in merged_meta['sample_id'].tolist()]
     merged_meta.to_csv(outf, index=False, sep='\t')
 
 if __name__ == "__main__":
