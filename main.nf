@@ -109,7 +109,7 @@ ch_meta_merged
 
 ch_meta_merged
     .splitCsv(header:true, sep:'\t')
-    .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+    .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
     .set { ch_clone_fasta_init }
 
 
