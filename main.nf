@@ -126,7 +126,7 @@ process MAKE_CLONE_FASTA {
      input:
      path multifasta from ch_multifasta_file
      path gpa from ch_gpa_file
-     tuple val(name), path(clone_fasta) into ch_clone_fasta_init
+     tuple val(name), path(clone_fasta) from ch_clone_fasta_init
 
      output:
      tuple val(name), path('*.fna') into ch_clone_fasta
