@@ -122,7 +122,6 @@ process MAKE_CLONE_FASTA {
      """
  }
 
-
 /*
  *  Create a Kallisto index for each strain
  */
@@ -132,10 +131,10 @@ process MAKE_KALLISTO_INDEX {
     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
 
     input:
-    path clone_fasta from ch_clone_fasta.collect()
+    path ('clone_fasta/*') from ch_clone_fasta.collect()
 
     output:
-    path '*.kidx' into ch_kallisto_idx
+    path ('*.kidx') into ch_kallisto_idx
 
     script:
     """
