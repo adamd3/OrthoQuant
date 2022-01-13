@@ -129,11 +129,6 @@ ch_meta_merged
 */
 
 process MAKE_CLONE_FASTA {
-
-     executor {
-         queueSize = 1
-     }
-
      tag "$name"
      publishDir "${params.outdir}/clone_fasta", mode: 'copy'
 
