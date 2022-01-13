@@ -105,7 +105,7 @@ process MERGE_METADATA {
  *  Create strain-specific FASTA files
  */
 
-process MAKE_CLONE_FASTA {
+process MAKE_CLONE_FASTA1 {
      tag "$multifasta"
      publishDir "${params.outdir}/clone_fasta", mode: 'copy'
 
