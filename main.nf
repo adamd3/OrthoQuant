@@ -10,12 +10,13 @@ def helpMessage() {
     log.info"""
     Usage:
     The typical command for running the pipeline is as follows:
-      nextflow run strain_seq --data_dir [dir] --meta_file [file] --multifasta_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
+      nextflow run strain_seq --data_dir [dir] --meta_file [file] --multifasta_file [file] --faidx_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
 
     Mandatory arguments:
       --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
       --meta_file [file]              Path to file containing sample metadata.
       --multifasta_file [file]        Path to multi-fasta file containing all strain-specific gene sequences combined.
+      --faidx_file [file]             Path to Samtools .fai index of multi-fasta file.
       --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
                                       Available: conda, docker
@@ -64,6 +65,10 @@ if (params.meta_file) {
 if (params.multifasta_file) {
     ch_multifasta_file = file(params.multifasta_file, checkIfExists: true)
 } else { exit 1, 'Multi-fasta file not specified!' }
+
+if (params.faidx_file) {
+    ch_faidx_file = file(params.faidx_file, checkIfExists: true)
+} else { exit 1, 'Index for multi-fasta file not specified!' }
 
 if (params.gpa_file) {
     ch_gpa_file = file(params.gpa_file, checkIfExists: true)
@@ -125,6 +130,7 @@ process MAKE_CLONE_FASTA {
 
      input:
      path multifasta from ch_multifasta_file
+     path faidx from ch_faidx_file // this prevents pyfaidx from indexing each time
      path gpa from ch_gpa_file
      tuple val(name), path(clone_fasta) from ch_clone_fasta_init
 
