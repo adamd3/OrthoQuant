@@ -27,9 +27,9 @@ def make_fasta(multifasta_file, gene_presence_absence, strain_name):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     colnames = csv_data.columns.values.tolist()
     gene_seq = Fasta(multifasta_file)
-    strain_genes = csv_data[strain_name].tolist()
-    genes_present = [gene for gene in strain_genes if gene in gene_seq.keys()]
-    if (len(genes_present)>0):
+    if strain_name in colnames:
+        strain_genes = csv_data[strain_name].tolist()
+        genes_present = [gene for gene in strain_genes if gene in gene_seq.keys()]
         outf2 = os.path.normpath(strain_name+'.fna')
         f = open(outf2, 'a')
         for gene in genes_present:
