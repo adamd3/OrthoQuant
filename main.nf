@@ -132,7 +132,7 @@ process MAKE_KALLISTO_INDEX {
     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
 
     input:
-    path clone_fasta from ch_clone_fasta
+    path clone_fasta from ch_clone_fasta.collect()
 
     output:
     path '*.kidx' into ch_kallisto_idx
