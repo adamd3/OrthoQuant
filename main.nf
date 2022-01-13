@@ -130,6 +130,7 @@ ch_meta_merged
 
 process MAKE_CLONE_FASTA {
      tag "$name"
+     maxForks 10
      publishDir "${params.outdir}/clone_fasta", mode: 'copy'
 
      input:
