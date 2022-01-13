@@ -150,7 +150,7 @@ process MAKE_KALLISTO_INDEX {
     tuple val(name), path(clone_fasta) from ch_clone_fasta
 
     output:
-    tuple val(name), path('*.kidx') from ch_kallisto_idx
+    tuple val(name), path('*.kidx') into ch_kallisto_idx
 
     script:
     """
