@@ -99,63 +99,66 @@ process MERGE_METADATA {
 }
 
 
+/*
+ *  Create channels for input files
+ */
+ch_meta_merged
+    .splitCsv(header:true, sep:'\t')
+    .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+    .set { ch_raw_reads_trimgalore }
+
+ch_meta_merged
+    .splitCsv(header:true, sep:'\t')
+    .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+    .set { ch_clone_fasta_init }
 
 
 /*
- *  Create strain-specific FASTA files
- */
+================================================================================
+   Create strain-specific FASTA files
+================================================================================
+*/
 
-process MAKE_CLONE_FASTA1 {
-     tag "$multifasta"
+process MAKE_CLONE_FASTA {
+     tag "$name"
      publishDir "${params.outdir}/clone_fasta", mode: 'copy'
 
      input:
      path multifasta from ch_multifasta_file
      path gpa from ch_gpa_file
+     tuple val(name), path(clone_fasta) into ch_clone_fasta_init
 
      output:
-     path '*.fna', emit: clone_fasta
+     tuple val(name), path('*.fna') into ch_clone_fasta
 
      script:
      """
-     make_clone_fasta.py $multifasta $gpa ./
+     make_single_clone_fasta.py $multifasta $gpa $name
      """
  }
+
 
 /*
  *  Create a Kallisto index for each strain
  */
 
 process MAKE_KALLISTO_INDEX {
-    tag "$clone_fasta"
+    tag "$name"
     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
 
     input:
-    path clone_fasta
+    tuple val(name), path(clone_fasta) from ch_clone_fasta
 
     output:
-    path '*.kidx' into ch_kallisto_idx
+    tuple val(name), path('*.kidx') from ch_kallisto_idx
 
     script:
     """
-    kallisto index -i ${clone_fasta.baseName}.kidx ${clone_fasta}
+    kallisto index -i $name.kidx ${clone_fasta}
     """
 }
 
 
-
-
-
-/*
-================================================================================
-    Create channel for input FastQ files
-================================================================================
-*/
-
-ch_meta_merged
-    .splitCsv(header:true, sep:'\t')
-    .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
-    .set { ch_raw_reads_trimgalore }
 
 
 
