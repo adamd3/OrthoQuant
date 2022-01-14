@@ -68,7 +68,6 @@ include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT} from './modules/kallisto'
     Main workflow
 ================================================================================
 */
-
 workflow {
 
     /*
@@ -80,7 +79,7 @@ workflow {
     ch_meta_merged = MERGE_METADATA.out.meta_merged
 
     /*
-     *  Create channels for input files
+     *  Create channels for input FastQ and FASTA files
      */
     ch_meta_merged
         .splitCsv(header:true, sep:'\t')
@@ -89,7 +88,7 @@ workflow {
 
     ch_meta_merged
         .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
+        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
     // extract the sample IDs only:

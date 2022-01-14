@@ -33,6 +33,14 @@ def merge_meta(metadata_file, data_dir, outf):
         os.path.join(data_dir, 'fastq', s+'_T1.fastq.gz') for s in merged_meta['RNA_sample_id'].tolist()]
     merged_meta['fasta'] = [
         os.path.join(data_dir, 'extract_fasta', s+'.fna') for s in merged_meta['sample_id'].tolist()]
+    ## remove any row where the FastQ or FASTA data is missing
+    rm_idx = []
+    for index, row in merged_meta.iterrows():
+        if not os.path.exists(row['fastq']):
+            rm_idx.append(index)
+        if not os.path.exists(row['fasta']):
+            rm_idx.append(index)
+    merged_meta = merged_meta.drop(merged_meta.index[rm_idx])
     merged_meta.to_csv(outf, index=False, sep='\t')
 
 if __name__ == "__main__":
