@@ -70,7 +70,7 @@ include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT} from './modules/kallisto'
 */
 
 workflow {
-    
+
     /*
      * Merge metadata from WGS and RNA-Seq
      */
@@ -149,13 +149,6 @@ workflow {
     COMPLETION EMAIL AND SUMMARY
 ================================================================================
 */
-
-workflow.onComplete {
-    if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report, fail_percent_mapped)
-    }
-    NfcoreTemplate.summary(workflow, params, log, fail_percent_mapped, pass_percent_mapped)
-}
 
 c_green = "\033[0;32m";
 c_reset = "\033[0m"
