@@ -113,7 +113,7 @@ workflow {
     MAKE_KALLISTO_INDEX (
         ch_clone_fasta
     )
-    ch_kallisto_idx = MAKE_KALLISTO_INDEX.out.clone_fasta
+    ch_kallisto_idx = MAKE_KALLISTO_INDEX.out.kallisto_idx
 
     /*
      *  Trim reads
