@@ -1,37 +1,14 @@
 #!/usr/bin/env nextflow
 
+nextflow.enable.dsl=2
+
 /*
 ================================================================================
     strain_seq: strain-specific analysis of bacterial RNA-Seq data
 ================================================================================
     Github : [github.com/adamd3/strain_seq]
 */
-def helpMessage() {
-    log.info"""
-    Usage:
-    The typical command for running the pipeline is as follows:
-      nextflow run strain_seq --data_dir [dir] --meta_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
 
-    Mandatory arguments:
-      --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
-      --meta_file [file]              Path to file containing sample metadata.
-      --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
-      -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
-                                      Available: conda, docker
-
-    Other options:
-      --outdir [file]                 The output directory where the results will be saved (Default: './results').
-      -name [str]                     Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
-
-    """.stripIndent()
-}
-
-
-/*
-================================================================================
-    Configuration
-================================================================================
-*/
 // Show help message
 if (params.help) {
     helpMessage()
@@ -77,171 +54,136 @@ if (params.gpa_file) {
 
 /*
 ================================================================================
-    Pre-processing steps
+    Modules
+================================================================================
+*/
+include {MERGE_METADATA} from './modules/merge_metadata'
+include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
+include {TRIMGALORE} from './modules/trim_reads'
+include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT} from './modules/kallisto'
+
+
+/*
+================================================================================
+    Main workflow
 ================================================================================
 */
 
-/*
- * Merge metadata from WGS and RNA-Seq
- */
+workflow {
+    
+    /*
+     * Merge metadata from WGS and RNA-Seq
+     */
+    MERGE_METADATA (
+        ch_metadata
+    )
+    ch_meta_merged = MERGE_METADATA.out.meta_merged
 
-process MERGE_METADATA {
-    tag "$metadata"
-    publishDir "${params.outdir}/pipeline_info", mode: 'copy'
+    /*
+     *  Create channels for input files
+     */
+    ch_meta_merged
+        .splitCsv(header:true, sep:'\t')
+        .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+        .set { ch_raw_reads_trimgalore }
 
-    input:
-    path metadata from ch_metadata
+    ch_meta_merged
+        .splitCsv(header:true, sep:'\t')
+        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
+        .set { ch_clone_fasta_init }
 
-    output:
-    path 'metadata_merged.tsv' into ch_meta_merged
+    // extract the sample IDs only:
+    // ch_meta_merged
+    //     .splitCsv(header: true, sep:'\t')
+    //     .map { row -> row.sample_id }
+    //     .set { ch_clone_ids }
 
-    script:
-    """
-    merge_metadata.py $metadata ${params.data_dir} metadata_merged.tsv
-    """
-}
+    /*
+     *  Create strain-specific FASTA files
+     */
+    MAKE_CLONE_FASTA (
+        ch_gpa_file,
+        ch_clone_fasta_init
+    )
+    ch_clone_fasta = MAKE_CLONE_FASTA.out.clone_fasta
 
+    /*
+     *  Create a Kallisto index for each strain
+     */
+    MAKE_KALLISTO_INDEX (
+        ch_clone_fasta
+    )
+    ch_kallisto_idx = MAKE_KALLISTO_INDEX.out.clone_fasta
 
-/*
- *  Create channels for input files
- */
-ch_meta_merged
-    .splitCsv(header:true, sep:'\t')
-    .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
-    .set { ch_raw_reads_trimgalore }
-
-ch_meta_merged
-    .splitCsv(header:true, sep:'\t')
-    .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: false) ] ] }
-    .set { ch_clone_fasta_init }
-
-// extract the sample IDs only:
-// ch_meta_merged
-//     .splitCsv(header: true, sep:'\t')
-//     .map { row -> row.sample_id }
-//     .set { ch_clone_ids }
-
-
-/*
-================================================================================
-   Create strain-specific FASTA files
-================================================================================
-*/
-
-process MAKE_CLONE_FASTA {
-     tag "$name"
-     maxForks 20 // maximum number of files to process in parallel (TODO: make this a parameter)
-     publishDir "${params.outdir}/clone_fasta", mode: 'copy'
-
-     input:
-     path gpa from ch_gpa_file
-     tuple val(name), path(genes) from ch_clone_fasta_init
-
-     output:
-     tuple val(name), path('*.fna') into ch_clone_fasta
-
-     script:
-     """
-     make_single_clone_fasta.py $genes $gpa $name
-     """
- }
-
-
-/*
- *  Create a Kallisto index for each strain
- */
-
-process MAKE_KALLISTO_INDEX {
-    tag "$name"
-    publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
-
-    input:
-    tuple val(name), path(clone_fasta) from ch_clone_fasta
-
-    output:
-    tuple val(name), path('*.kidx') into ch_kallisto_idx
-
-    script:
-    """
-    kallisto index -i ${name}.kidx ${clone_fasta}
-    """
-}
-
-
-
-
-
-/*
-================================================================================
-    Trim reads
-================================================================================
-*/
-
-if (params.skip_trimming) {
-    ch_trimmed_reads = ch_raw_reads_trimgalore
-    ch_trimgalore_results_mqc = Channel.empty()
-    ch_trimgalore_fastqc_reports_mqc = Channel.empty()
-} else {
-    process TRIMGALORE {
-        tag "$name"
-        label 'process_high'
-        publishDir "${params.outdir}/trim_galore", mode: 'copy',
-            saveAs: { filename ->
-                          if (filename.endsWith('.html')) "fastqc/$filename"
-                          else if (filename.endsWith('.zip')) "fastqc/zips/$filename"
-                          else if (filename.endsWith('trimming_report.txt')) "logs/$filename"
-                          else params.save_trimmed ? filename : null
-                    }
-
-        input:
-        tuple val(name), path(reads) from ch_raw_reads_trimgalore
-
-        output:
-        tuple val(name), path('*.fq.gz') into ch_trimmed_reads
-        path '*.txt' into ch_trimgalore_results_mqc
-        path '*.{zip,html}' into ch_trimgalore_fastqc_reports_mqc
-
-        script:
-        // Calculate number of --cores for TrimGalore based on value of task.cpus
-        // See: https://github.com/FelixKrueger/TrimGalore/blob/master/Changelog.md#version-060-release-on-1-mar-2019
-        // See: https://github.com/nf-core/atacseq/pull/65
-        // (Max no cores = 4, since there are diminishing returns beyond this)
-        def cores = 1
-        if (task.cpus) {
-            cores = (task.cpus as int) - 3
-            if (cores < 1) cores = 1
-            if (cores > 4) cores = 4
-        }
-
-        // Add symlinks to original fastqs for consistent naming in MultiQC
-        """
-        [ ! -f  ${name}.fastq.gz ] && ln -s $reads ${name}.fastq.gz
-        trim_galore --cores $cores --fastqc --gzip ${name}.fastq.gz
-        """
+    /*
+     *  Trim reads
+     */
+    if (params.skip_trimming) {
+        ch_trimmed_reads = ch_raw_reads_trimgalore
+        ch_trimgalore_results_mqc = Channel.empty()
+        ch_trimgalore_fastqc_reports_mqc = Channel.empty()
+    } else {
+        TRIMGALORE (
+            ch_raw_reads_trimgalore
+        )
+        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads
+        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
+        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
     }
+
+    /*
+     *  Create a Kallisto index for each strain
+     */
+    KALLISTO_QUANT (
+        ch_trimmed_reads,
+        ch_kallisto_idx
+    )
+    // NOTE: this is a directory containing the kallisto results
+    ch_kallisto_out = KALLISTO_QUANT.out.kallisto_out
+
 }
 
 
 /*
 ================================================================================
-    Quantify strain-specific gene sets with kallisto
+    COMPLETION EMAIL AND SUMMARY
 ================================================================================
 */
 
-process KALLISTO_QUANT {
-    tag "$name"
-    publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
+workflow.onComplete {
+    if (params.email || params.email_on_fail) {
+        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report, fail_percent_mapped)
+    }
+    NfcoreTemplate.summary(workflow, params, log, fail_percent_mapped, pass_percent_mapped)
+}
 
-    input:
-    tuple val(name), path(reads) from ch_trimmed_reads
-    tuple val(name2), path(idx) from ch_kallisto_idx
+c_green = "\033[0;32m";
+c_reset = "\033[0m"
 
-    output:
-    path "$name" into ch_kallisto_out
+workflow.onComplete {
+    log.info"""
+    Execution status: ${ workflow.success ? 'OK' : 'failed' }
+    ${c_green}Results are reported here: $params.outdir${c_reset}
+    ￼""".stripIndent()
+}
 
-    script:
-    """
-    kallisto quant -t $task.cpus --single -i $idx \
-        --fr-stranded --single -l 150 -s 20 -o $name $reads
-    """
+
+def helpMessage() {
+    log.info"""
+    Usage:
+    The typical command for running the pipeline is as follows:
+      nextflow run strain_seq --data_dir [dir] --meta_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
+
+    Mandatory arguments:
+      --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
+      --meta_file [file]              Path to file containing sample metadata.
+      --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
+      -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
+                                      Available: conda, docker
+
+    Other options:
+      --outdir [file]                 The output directory where the results will be saved (Default: './results').
+      -name [str]                     Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
+
+    """.stripIndent()
 }
