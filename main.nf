@@ -92,10 +92,10 @@ workflow {
         .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
-    ch_st_file
-        .fromPath(params.st_file)
-        .splitText()
-        .view()
+    // ch_st_file
+    //     .fromPath(params.st_file)
+    //     .splitText()
+    //     .view()
 
     // extract the sample IDs only:
     // ch_meta_merged
@@ -110,7 +110,7 @@ workflow {
     SUBSET_GENES (
         ch_gpa_file,
         ch_meta_merged,
-        ch_st_file,
+        params.st_file,
         params.perc
     )
     ch_gene_subset = SUBSET_GENES.out.kallisto_merged_lens
@@ -166,7 +166,7 @@ workflow {
         ch_gpa_file,
         ch_kallisto_out,
         ch_meta_merged,
-        ch_st_file
+        params.st_file
     )
     ch_kallisto_counts = MERGE_COUNTS.out.kallisto_merged_counts
 
@@ -177,7 +177,7 @@ workflow {
         ch_gpa_file,
         ch_kallisto_out,
         ch_meta_merged,
-        ch_st_file
+        params.st_file
     )
     ch_kallisto_lens = MERGE_LENS.out.kallisto_merged_lens
 
