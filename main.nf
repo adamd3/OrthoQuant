@@ -57,7 +57,7 @@ if (params.gpa_file) {
     Modules
 ================================================================================
 */
-include {MERGE_METADATA} from './modules/metadata'
+include {MERGE_METADATA; SUBSET_GENES} from './modules/metadata'
 include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT} from './modules/kallisto'
