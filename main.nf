@@ -57,7 +57,7 @@ if (params.gpa_file) {
     Modules
 ================================================================================
 */
-include {MERGE_METADATA} from './modules/merge_metadata'
+include {MERGE_METADATA} from './modules/metadata'
 include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT} from './modules/kallisto'
@@ -78,8 +78,9 @@ workflow {
     )
     ch_meta_merged = MERGE_METADATA.out.meta_merged
 
+
     /*
-     *  Create channels for input FastQ and FASTA files
+     *  Create channels for input files
      */
     ch_meta_merged
         .splitCsv(header:true, sep:'\t')
@@ -91,11 +92,29 @@ workflow {
         .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
+    ch_st_file
+        .fromPath(params.st_file)
+        .splitText()
+        .view()
+
     // extract the sample IDs only:
     // ch_meta_merged
     //     .splitCsv(header: true, sep:'\t')
     //     .map { row -> row.sample_id }
     //     .set { ch_clone_ids }
+
+
+    /*
+     *  Get the subset of genes to be included in the analysis
+     */
+    SUBSET_GENES (
+        ch_gpa_file,
+        ch_meta_merged,
+        ch_st_file,
+        params.perc
+    )
+    ch_gene_subset = SUBSET_GENES.out.kallisto_merged_lens
+
 
     /*
      *  Create strain-specific FASTA files
@@ -131,21 +150,45 @@ workflow {
     }
 
     /*
-     *  Create a Kallisto index for each strain
+     *  Quantify gene expression using Kallisto
      */
     KALLISTO_QUANT (
         ch_trimmed_reads,
         ch_kallisto_idx
     )
-    // NOTE: this is a directory containing the kallisto results
+    // NOTE: the output is a _directory_ containing the kallisto results
     ch_kallisto_out = KALLISTO_QUANT.out.kallisto_out
+
+    /*
+     *  Merge counts
+     */
+    MERGE_COUNTS (
+        ch_gpa_file,
+        ch_kallisto_out,
+        ch_meta_merged,
+        ch_st_file
+    )
+    ch_kallisto_counts = MERGE_COUNTS.out.kallisto_merged_counts
+
+    /*
+     *  Merge effective gene lengths
+     */
+    MERGE_LENS (
+        ch_gpa_file,
+        ch_kallisto_out,
+        ch_meta_merged,
+        ch_st_file
+    )
+    ch_kallisto_lens = MERGE_LENS.out.kallisto_merged_lens
+
+
 
 }
 
 
 /*
 ================================================================================
-    COMPLETION EMAIL AND SUMMARY
+    Completion summary
 ================================================================================
 */
 
