@@ -202,7 +202,7 @@ workflow {
         ch_kallisto_lens,
         ch_gene_subset
     )
-    ch_scaled_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
+    ch_tmm_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
     // NB the resulting counts are log-transformed by default
 
 }
