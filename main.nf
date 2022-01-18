@@ -57,10 +57,13 @@ if (params.gpa_file) {
     Modules
 ================================================================================
 */
-include {MERGE_METADATA; SUBSET_GENES} from './modules/metadata'
+include {MERGE_METADATA} from './modules/metadata'
 include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT; MERGE_COUNTS; MERGE_LENS} from './modules/kallisto'
+include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS} from './modules/normalisation'
+
+
 
 
 /*
@@ -113,7 +116,7 @@ workflow {
         params.st_file,
         params.perc
     )
-    ch_gene_subset = SUBSET_GENES.out.kallisto_merged_lens
+    ch_gene_subset = SUBSET_GENES.out.gene_subset
 
 
     /*
@@ -181,10 +184,28 @@ workflow {
     )
     ch_kallisto_lens = MERGE_LENS.out.kallisto_merged_lens
 
+    /*
+     *  Scale counts to median gene length across strains
+     */
+    LENGTH_SCALE_COUNTS (
+        ch_kallisto_counts,
+        ch_kallisto_lens,
+        ch_gene_subset
+    )
+    ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
 
+    /*
+     *  Get size-factor-scaled, TMM-normalised counts
+     */
+    TMM_NORMALISE_COUNTS (
+        ch_kallisto_counts,
+        ch_kallisto_lens,
+        ch_gene_subset
+    )
+    ch_scaled_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
+    // NB the resulting counts are log-transformed by default
 
 }
-
 
 /*
 ================================================================================

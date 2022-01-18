@@ -1,5 +1,6 @@
 process MAKE_KALLISTO_INDEX {
     tag "$name"
+    label 'process_high'
     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
 
     input:
@@ -16,6 +17,7 @@ process MAKE_KALLISTO_INDEX {
 
 process KALLISTO_QUANT {
     tag "$name"
+    label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
 
     input:
@@ -34,6 +36,7 @@ process KALLISTO_QUANT {
 
 process MERGE_COUNTS {
     tag "$name"
+    label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
 
     input:
@@ -58,6 +61,7 @@ process MERGE_COUNTS {
 
 process MERGE_LENS {
     tag "$name"
+    label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
 
     input:
