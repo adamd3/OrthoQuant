@@ -44,16 +44,15 @@ def merge_lens(gene_presence_absence, quant_dir, metadata_merged, ST_file, outf)
     for index, row in meta_sub.iterrows():
         sample_id = row['sample_id']
         sample_name = row['sample_name']
-        quant_file = os.path.join(quant_dir, sample_name, 'abundance.tsv')
-        if os.path.exists(quant_file):
-            quant_dat = pd.read_csv(quant_file, sep = "\t")
-            quant_dat = quant_dat[["target_id", "eff_length"]]
-            quant_dat = quant_dat.rename(columns={'target_id': sample_id})
-            cg = csv_data[["Gene", sample_id]]
-            quant_merged = pd.merge(cg, quant_dat, on=sample_id)
-            quant_merged = quant_merged[["Gene", "eff_length"]]
-            quant_merged = quant_merged.rename(columns={'eff_length': sample_name})
-            quant_dfs.append(quant_merged)
+        quant_file = os.path.join(quant_dir, 'abundance.tsv')
+        quant_dat = pd.read_csv(quant_file, sep = "\t")
+        quant_dat = quant_dat[["target_id", "eff_length"]]
+        quant_dat = quant_dat.rename(columns={'target_id': sample_id})
+        cg = csv_data[["Gene", sample_id]]
+        quant_merged = pd.merge(cg, quant_dat, on=sample_id)
+        quant_merged = quant_merged[["Gene", "eff_length"]]
+        quant_merged = quant_merged.rename(columns={'eff_length': sample_name})
+        quant_dfs.append(quant_merged)
     quant_dfs = [df.set_index('Gene') for df in quant_dfs]
     quant_merged = pd.concat(quant_dfs, axis=1)
     quant_merged.to_csv(outf, index=True, sep='\t')

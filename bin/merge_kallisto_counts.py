@@ -43,7 +43,7 @@ def merge_counts(gene_presence_absence, quant_dir, metadata_merged, ST_file, out
     for index, row in meta_sub.iterrows():
         sample_id = row['sample_id']
         sample_name = row['sample_name']
-        quant_file = os.path.join(quant_dir, sample_name, 'abundance.tsv')
+        quant_file = os.path.join(quant_dir, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "est_counts"]]
         quant_dat = quant_dat.rename(columns={'target_id': sample_id})
