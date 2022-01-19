@@ -22,21 +22,20 @@ def parse():
     )
     parser.add_argument(
         "--ST_file",
-        help = "File containing specific STs to be included (optional)",
-        nargs = '?', default = None
+        help = "File containing specific STs to be included"
     )
     parser.add_argument("--outf", help="File for results")
     args = parser.parse_args()
-    merge_lens(**vars(args))
+    merge_counts(**vars(args))
 
-def merge_lens(gene_presence_absence, quant_dir, metadata_merged, ST_file, outf):
+def merge_counts(gene_presence_absence, quant_dir, metadata_merged, ST_file, outf):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     st_tab = pd.read_csv(ST_file, sep = "\t", header=None)
     colnames = csv_data.columns.values.tolist()
     gene_names = csv_data.iloc[:,0].tolist()
     metadata = metadata[metadata['sample_id'].isin(colnames)]
-    ## subset to STs with specific list
+    ## subset to STs in list
     keep_ST = st_tab[0].tolist()
     keep_ST = [str(st) for st in keep_ST]
     meta_sub = metadata[metadata['majority_ST'].isin(keep_ST)]
@@ -56,7 +55,6 @@ def merge_lens(gene_presence_absence, quant_dir, metadata_merged, ST_file, outf)
     quant_dfs = [df.set_index('Gene') for df in quant_dfs]
     quant_merged = pd.concat(quant_dfs, axis=1)
     quant_merged.to_csv(outf, index=True, sep='\t')
-
 
 
 if __name__ == "__main__":
