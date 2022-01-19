@@ -168,8 +168,7 @@ workflow {
     MERGE_COUNTS (
         ch_gpa_file,
         ch_kallisto_out,
-        ch_meta_merged,
-        params.st_file
+        ch_meta_merged
     )
     ch_kallisto_counts = MERGE_COUNTS.out.kallisto_merged_counts
 
@@ -179,8 +178,7 @@ workflow {
     MERGE_LENS (
         ch_gpa_file,
         ch_kallisto_out,
-        ch_meta_merged,
-        params.st_file
+        ch_meta_merged
     )
     ch_kallisto_lens = MERGE_LENS.out.kallisto_merged_lens
 

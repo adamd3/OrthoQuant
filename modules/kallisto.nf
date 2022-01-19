@@ -43,7 +43,6 @@ process MERGE_COUNTS {
     path gpa_file
     tuple val(name), path(kallisto_dir)
     path meta_merged
-    path st_file
 
     output:
     tuple val(name), path('*.tsv'), emit: kallisto_merged_counts
@@ -54,7 +53,7 @@ process MERGE_COUNTS {
         --gene_presence_absence=$gpa_file \
         --quant_dir=$kallisto_dir \
         --metadata_merged=$meta_merged \
-        --ST_file=$st_file \
+        --ST_file=${params.st_file} \
         --outf=kallisto_merged_counts.tsv
     """
 }
@@ -68,7 +67,6 @@ process MERGE_LENS {
     path gpa_file
     tuple val(name), path(kallisto_dir)
     path meta_merged
-    path st_file
 
     output:
     tuple val(name), path('*.tsv'), emit: kallisto_merged_lens
@@ -79,7 +77,7 @@ process MERGE_LENS {
         --gene_presence_absence=$gpa_file \
         --quant_dir=$kallisto_dir \
         --metadata_merged=$meta_merged \
-        --ST_file=$st_file \
+        --ST_file=${params.st_file} \
         --outf=kallisto_merged_lens.tsv
     """
 }

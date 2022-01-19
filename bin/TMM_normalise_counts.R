@@ -9,6 +9,9 @@ if (!require("edgeR")){
         install.packages("BiocManager")
     BiocManager::install("edgeR")
 }
+if (!require("matrixStats")){
+    install.packages("matrixStats")
+}
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
@@ -74,7 +77,7 @@ lengths_tab <- lengths_tab[match(rownames(counts_tab), rownames(lengths_tab)),]
 
 
 ## scale counts to reads per median gene length
-median_lens <- matrixStats::rowMedians(as.matrix(lengths_tab), na.rm=TRUE)
+median_lens <- rowMedians(as.matrix(lengths_tab), na.rm=TRUE)
 counts_tab_scaled <- (counts_tab/lengths_tab)
 counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 

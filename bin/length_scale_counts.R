@@ -4,6 +4,10 @@
 if (!require("optparse")){
     install.packages("optparse")
 }
+if (!require("matrixStats")){
+    install.packages("matrixStats")
+}
+
 
 ################################################
 ## Arguments
@@ -69,7 +73,7 @@ rownames(counts_tab) <- rownames(lengths_tab) <- counts_tab$Gene
 counts_tab$Gene <- lengths_tab$Gene <- NULL
 
 ## scale counts to reads per median gene length
-median_lens <- matrixStats::rowMedians(as.matrix(lengths_tab), na.rm=TRUE)
+median_lens <- rowMedians(as.matrix(lengths_tab), na.rm=TRUE)
 counts_tab_scaled <- (counts_tab/lengths_tab)
 counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 
