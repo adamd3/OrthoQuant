@@ -1,7 +1,14 @@
 #!/usr/bin/env Rscript
 
-library(optparse)
-library(edgeR)
+## load / install packages
+if (!require("optparse")){
+    install.packages("optparse")
+}
+if (!require("edgeR")){
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+    BiocManager::install("edgeR")
+}
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
