@@ -34,7 +34,8 @@ process KALLISTO_QUANT {
     """
 }
 
-process MERGE_COUNTS {
+// NB must merge these simultaneously or the sample order will not be maintained
+process MERGE_COUNTS_AND_LENS {
     tag "$name"
     label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
@@ -45,7 +46,7 @@ process MERGE_COUNTS {
     path meta_merged
 
     output:
-    tuple val(name), path('*.tsv'), emit: kallisto_merged_counts
+    tuple val(name), path('kallisto_merged_counts.tsv'), path('kallisto_merged_lens.tsv'), emit: kallisto_merged_out
 
     script:
     """
@@ -55,24 +56,7 @@ process MERGE_COUNTS {
         --metadata_merged=$meta_merged \
         --ST_file=${params.st_file} \
         --outf=kallisto_merged_counts.tsv
-    """
-}
 
-process MERGE_LENS {
-    tag "$name"
-    label 'process_high'
-    publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
-
-    input:
-    path gpa_file
-    tuple val(name), path(kallisto_dir)
-    path meta_merged
-
-    output:
-    tuple val(name), path('*.tsv'), emit: kallisto_merged_lens
-
-    script:
-    """
     merge_kallisto_lens.py \
         --gene_presence_absence=$gpa_file \
         --quant_dir=$kallisto_dir \

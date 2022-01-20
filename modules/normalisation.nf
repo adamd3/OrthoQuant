@@ -28,8 +28,7 @@ process LENGTH_SCALE_COUNTS {
     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
     input:
-    tuple val(name), path(merged_counts)
-    tuple val(name), path(merged_lens)
+    tuple val(name), path(merged_counts), path(merged_lens)
     path gene_subset
 
     output:
@@ -52,12 +51,11 @@ process TMM_NORMALISE_COUNTS {
     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
     input:
-    tuple val(name), path(merged_counts)
-    tuple val(name), path(merged_lens)
+    tuple val(name), path(merged_counts), path(merged_lens)
     path gene_subset
 
     output:
-    path 'kallisto_scaled_counts.tsv', emit: tmm_counts
+    path 'kallisto_tmm_counts.tsv', emit: tmm_counts
 
     script:
     """

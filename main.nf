@@ -60,7 +60,7 @@ if (params.gpa_file) {
 include {MERGE_METADATA} from './modules/metadata'
 include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
-include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT; MERGE_COUNTS; MERGE_LENS} from './modules/kallisto'
+include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
 include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS} from './modules/normalisation'
 
 
@@ -165,29 +165,18 @@ workflow {
     /*
      *  Merge counts
      */
-    MERGE_COUNTS (
+    MERGE_COUNTS_AND_LENS (
         ch_gpa_file,
         ch_kallisto_out,
         ch_meta_merged
     )
-    ch_kallisto_counts = MERGE_COUNTS.out.kallisto_merged_counts
-
-    /*
-     *  Merge effective gene lengths
-     */
-    MERGE_LENS (
-        ch_gpa_file,
-        ch_kallisto_out,
-        ch_meta_merged
-    )
-    ch_kallisto_lens = MERGE_LENS.out.kallisto_merged_lens
+    ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out
 
     /*
      *  Scale counts to median gene length across strains
      */
     LENGTH_SCALE_COUNTS (
-        ch_kallisto_counts,
-        ch_kallisto_lens,
+        ch_kallisto_merged_out,
         ch_gene_subset
     )
     ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
@@ -196,12 +185,20 @@ workflow {
      *  Get size-factor-scaled, TMM-normalised counts
      */
     TMM_NORMALISE_COUNTS (
-        ch_kallisto_counts,
-        ch_kallisto_lens,
+        ch_kallisto_merged_out,
         ch_gene_subset
     )
     ch_tmm_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
     // NB the resulting counts are log-transformed by default
+
+    /*
+     *  UMAP of samples
+     */
+    UMAP_SAMPLES (,
+        ch_tmm_counts,
+        ch_meta_merged
+    )
+    ch_umap_out = ch_tmm_counts.out.umap_out
 
 }
 

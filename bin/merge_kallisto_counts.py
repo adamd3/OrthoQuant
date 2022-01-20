@@ -57,6 +57,5 @@ def merge_counts(gene_presence_absence, quant_dir, metadata_merged, ST_file, out
     quant_merged.to_csv(outf, index=True, sep='\t')
 
 
-
 if __name__ == "__main__":
     parse()
