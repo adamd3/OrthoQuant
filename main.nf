@@ -62,6 +62,7 @@ include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {MAKE_KALLISTO_INDEX; KALLISTO_QUANT; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
 include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS} from './modules/normalisation'
+include {UMAP_SAMPLES} from './modules/plots'
 
 
 
@@ -194,7 +195,7 @@ workflow {
     /*
      *  UMAP of samples
      */
-    UMAP_SAMPLES (,
+    UMAP_SAMPLES (
         ch_tmm_counts,
         ch_meta_merged
     )
