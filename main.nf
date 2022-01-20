@@ -199,7 +199,7 @@ workflow {
         ch_tmm_counts,
         ch_meta_merged
     )
-    ch_umap_out = ch_tmm_counts.out.umap_out
+    ch_umap_out = UMAP_SAMPLES.out.umap_out
 
 }
 
