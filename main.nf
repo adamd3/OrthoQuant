@@ -160,15 +160,14 @@ workflow {
         ch_trimmed_reads,
         ch_kallisto_idx
     )
-    // NOTE: the output is a _directory_ containing the kallisto results
-    ch_kallisto_out = KALLISTO_QUANT.out.kallisto_out
+    ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
 
     /*
      *  Merge counts
      */
     MERGE_COUNTS_AND_LENS (
         ch_gpa_file,
-        ch_kallisto_out,
+        ch_kallisto_out_dirs,
         ch_meta_merged
     )
     ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out

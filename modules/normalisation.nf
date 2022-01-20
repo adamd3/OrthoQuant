@@ -23,12 +23,12 @@ process SUBSET_GENES {
 }
 
 process LENGTH_SCALE_COUNTS {
-    tag "$name"
+    tag "$merged_lens"
     label 'process_medium'
     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
     input:
-    tuple val(name), path(merged_counts), path(merged_lens)
+    tuple path(merged_counts), path(merged_lens)
     path gene_subset
 
     output:
@@ -46,12 +46,12 @@ process LENGTH_SCALE_COUNTS {
 }
 
 process TMM_NORMALISE_COUNTS {
-    tag "$name"
+    tag "$merged_counts"
     label 'process_medium'
     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
     input:
-    tuple val(name), path(merged_counts), path(merged_lens)
+    tuple path(merged_counts), path(merged_lens)
     path gene_subset
 
     output:

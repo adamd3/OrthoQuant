@@ -13,10 +13,6 @@ def parse():
         help = "CSV file containing binary presence/absence of genes per clone"
     )
     parser.add_argument(
-        "--quant_dir",
-        help = "Directory containing Kallisto quantification files"
-    )
-    parser.add_argument(
         "--metadata_merged",
         help = "TSV file mapping clone names with sequence data sample names"
     )
@@ -28,7 +24,7 @@ def parse():
     args = parser.parse_args()
     merge_counts(**vars(args))
 
-def merge_counts(gene_presence_absence, quant_dir, metadata_merged, ST_file, outf):
+def merge_counts(gene_presence_absence, metadata_merged, ST_file, outf):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     st_tab = pd.read_csv(ST_file, sep = "\t", header=None)
@@ -43,7 +39,7 @@ def merge_counts(gene_presence_absence, quant_dir, metadata_merged, ST_file, out
     for index, row in meta_sub.iterrows():
         sample_id = row['sample_id']
         sample_name = row['sample_name']
-        quant_file = os.path.join(quant_dir, 'abundance.tsv')
+        quant_file = os.path.join(sample_id, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "est_counts"]]
         quant_dat = quant_dat.rename(columns={'target_id': sample_id})

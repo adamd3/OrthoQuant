@@ -25,41 +25,40 @@ process KALLISTO_QUANT {
     tuple val(name2), path(idx)
 
     output:
-    tuple val(name), path(name), emit: kallisto_out
+    path "kallisto_${name}", emit: kallisto_out_dirs
 
     script:
     """
-    kallisto quant -t $task.cpus --single -i $idx \
-        --fr-stranded --single -l 150 -s 20 -o $name $reads
+    if [ "$name" == "$name2" ]; then
+        kallisto quant -t $task.cpus --single -i $idx \
+            --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $reads
+    fi
     """
 }
 
-// NB must merge these simultaneously or the sample order will not be maintained
 process MERGE_COUNTS_AND_LENS {
-    tag "$name"
+    tag "merge_counts_and_lens"
     label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
 
     input:
     path gpa_file
-    tuple val(name), path(kallisto_dir)
+    path kallisto_dirs
     path meta_merged
 
     output:
-    tuple val(name), path('kallisto_merged_counts.tsv'), path('kallisto_merged_lens.tsv'), emit: kallisto_merged_out
+    tuple path('kallisto_merged_counts.tsv'), path('kallisto_merged_lens.tsv'), emit: kallisto_merged_out
 
     script:
     """
     merge_kallisto_counts.py \
         --gene_presence_absence=$gpa_file \
-        --quant_dir=$kallisto_dir \
         --metadata_merged=$meta_merged \
         --ST_file=${params.st_file} \
         --outf=kallisto_merged_counts.tsv
 
     merge_kallisto_lens.py \
         --gene_presence_absence=$gpa_file \
-        --quant_dir=$kallisto_dir \
         --metadata_merged=$meta_merged \
         --ST_file=${params.st_file} \
         --outf=kallisto_merged_lens.tsv
