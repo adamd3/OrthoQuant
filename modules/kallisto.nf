@@ -25,7 +25,7 @@ process KALLISTO_QUANT {
     tuple val(name2), path(idx)
 
     output:
-    path "kallisto_${name}", emit: kallisto_out_dirs
+    path "kallisto_${name}", emit: kallisto_out_dirs, optional: true
 
     script:
     """
