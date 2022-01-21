@@ -1,40 +1,68 @@
-process MAKE_KALLISTO_INDEX {
-    tag "$name"
-    label 'process_high'
-    publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
+// process MAKE_KALLISTO_INDEX {
+//     tag "$name"
+//     label 'process_high'
+//     publishDir "${params.outdir}/kallisto_idx", mode: 'copy'
+//
+//     input:
+//     tuple val(name), path(clone_fasta)
+//
+//     output:
+//     tuple val(name), path('*.kidx'), emit: kallisto_idx
+//
+//     script:
+//     """
+//     kallisto index -i ${name}.kidx ${clone_fasta}
+//     """
+// }
+//
+// process KALLISTO_QUANT {
+//     tag "$name"
+//     label 'process_high'
+//     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
+//
+//     input:
+//     tuple val(name), path(reads)
+//     tuple val(name2), path(idx)
+//
+//     output:
+//     path "kallisto_${name}", emit: kallisto_out_dirs, optional: true
+//
+//     script:
+//     """
+//     if [ "$name" == "$name2" ]; then
+//         kallisto quant -t $task.cpus --single -i $idx \
+//             --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $reads
+//     fi
+//     """
+// }
 
-    input:
-    tuple val(name), path(clone_fasta)
-
-    output:
-    tuple val(name), path('*.kidx'), emit: kallisto_idx
-
-    script:
-    """
-    kallisto index -i ${name}.kidx ${clone_fasta}
-    """
-}
-
+// create fasta + build index + quantify (single process)
 process KALLISTO_QUANT {
     tag "$name"
     label 'process_high'
     publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
 
     input:
-    tuple val(name), path(reads)
-    tuple val(name2), path(idx)
+    path gpa
+    tuple val(name), path(infiles)
+    path trimmed_reads
 
     output:
     path "kallisto_${name}", emit: kallisto_out_dirs, optional: true
 
     script:
     """
-    if [ "$name" == "$name2" ]; then
-        kallisto quant -t $task.cpus --single -i $idx \
-            --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $reads
-    fi
+    fastq_file=${infiles[0]}
+    fasta_file=${infiles[1]}
+    ss_fasta_file="${strain_name}_ss.fna"
+
+    make_single_clone_fasta.py $fasta_file $gpa $name
+    kallisto index -i ${name}.kidx $ss_fasta_file
+    kallisto quant -t $task.cpus --single -i ${name}.kidx \
+        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
     """
 }
+
 
 process MERGE_COUNTS_AND_LENS {
     tag "merge_counts_and_lens"

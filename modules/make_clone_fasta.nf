@@ -4,7 +4,7 @@ process MAKE_CLONE_FASTA {
      publishDir "${params.outdir}/clone_fasta", mode: 'copy'
 
      input:
-     path gpa 
+     path gpa
      tuple val(name), path(genes)
 
      output:

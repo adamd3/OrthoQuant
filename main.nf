@@ -90,10 +90,15 @@ workflow {
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
+    //
+    // ch_meta_merged
+    //     .splitCsv(header:true, sep:'\t')
+    //     .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+    //     .set { ch_clone_fasta_init }
 
     ch_meta_merged
         .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+        .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true), file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
     // ch_st_file
@@ -107,6 +112,21 @@ workflow {
     //     .map { row -> row.sample_id }
     //     .set { ch_clone_ids }
 
+    /*
+     *  Trim reads
+     */
+    if (params.skip_trimming) {
+        ch_trimmed_reads = ch_raw_reads_trimgalore.collect()
+        ch_trimgalore_results_mqc = Channel.empty()
+        ch_trimgalore_fastqc_reports_mqc = Channel.empty()
+    } else {
+        TRIMGALORE (
+            ch_raw_reads_trimgalore
+        )
+        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
+        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
+        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
+    }
 
     /*
      *  Get the subset of genes to be included in the analysis
@@ -119,48 +139,15 @@ workflow {
     )
     ch_gene_subset = SUBSET_GENES.out.gene_subset
 
-
     /*
-     *  Create strain-specific FASTA files
-     */
-    MAKE_CLONE_FASTA (
-        ch_gpa_file,
-        ch_clone_fasta_init
-    )
-    ch_clone_fasta = MAKE_CLONE_FASTA.out.clone_fasta
-
-    /*
-     *  Create a Kallisto index for each strain
-     */
-    MAKE_KALLISTO_INDEX (
-        ch_clone_fasta
-    )
-    ch_kallisto_idx = MAKE_KALLISTO_INDEX.out.kallisto_idx
-
-    /*
-     *  Trim reads
-     */
-    if (params.skip_trimming) {
-        ch_trimmed_reads = ch_raw_reads_trimgalore
-        ch_trimgalore_results_mqc = Channel.empty()
-        ch_trimgalore_fastqc_reports_mqc = Channel.empty()
-    } else {
-        TRIMGALORE (
-            ch_raw_reads_trimgalore
-        )
-        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads
-        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
-        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
-    }
-
-    /*
-     *  Quantify gene expression using Kallisto
+     *  Create strain-specific fasta file; index it; pseudo-align trimmed reads
      */
     KALLISTO_QUANT (
-        ch_trimmed_reads,
-        ch_kallisto_idx
+        ch_gpa_file,
+        ch_clone_fasta_init,
+        ch_trimmed_reads
     )
-    ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
+    ch_kallisto_out_dirs = MAKE_CLONE_FASTA.out.clone_fasta
 
     /*
      *  Merge counts
