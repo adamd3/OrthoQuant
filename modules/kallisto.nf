@@ -48,7 +48,7 @@ process KALLISTO_QUANT {
     path trimmed_reads
 
     output:
-    path "kallisto_${name}", emit: kallisto_out_dirs, optional: true
+    path "kallisto_${name}", emit: kallisto_out_dirs
 
     script:
     """
