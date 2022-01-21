@@ -54,7 +54,7 @@ process KALLISTO_QUANT {
     """
     fastq_file=${infiles[0]}
     fasta_file=${infiles[1]}
-    ss_fasta_file="${strain_name}_ss.fna"
+    ss_fasta_file="${name}_ss.fna"
 
     make_single_clone_fasta.py $fasta_file $gpa $name
     kallisto index -i ${name}.kidx $ss_fasta_file
