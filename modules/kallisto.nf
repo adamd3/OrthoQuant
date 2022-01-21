@@ -44,7 +44,7 @@ process KALLISTO_QUANT {
 
     input:
     path gpa
-    tuple val(name), path(infiles)
+    tuple val(name), path(clone_fasta)
     path trimmed_reads
 
     output:
@@ -52,12 +52,8 @@ process KALLISTO_QUANT {
 
     script:
     """
-    fastq_file=${infiles[0]}
-    fasta_file=${infiles[1]}
-    ss_fasta_file="${name}_ss.fna"
-
-    make_single_clone_fasta.py $fasta_file $gpa $name
-    kallisto index -i ${name}.kidx $ss_fasta_file
+    make_single_clone_fasta.py $clone_fasta $gpa $name
+    kallisto index -i ${name}.kidx "${name}_ss.fna"
     kallisto quant -t $task.cpus --single -i ${name}.kidx \
         --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
     """

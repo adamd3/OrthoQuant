@@ -90,15 +90,10 @@ workflow {
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
-    //
-    // ch_meta_merged
-    //     .splitCsv(header:true, sep:'\t')
-    //     .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
-    //     .set { ch_clone_fasta_init }
 
     ch_meta_merged
         .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true), file(row.fasta, checkIfExists: true) ] ] }
+        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
     // ch_st_file
