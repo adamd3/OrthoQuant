@@ -31,7 +31,6 @@ meta_f <- opt$metadata_merged
 outdir <- opt$outdir
 
 
-colpal <- c(brewer.pal(9,"Set1"), rev(cbp), brewer.pal(8,"Accent"))
 large_disc_pal <- brewer.pal.info[brewer.pal.info$category == 'qual',]
 colpal_large <- unlist(
     mapply(brewer.pal, large_disc_pal$maxcolors, rownames(large_disc_pal)))
