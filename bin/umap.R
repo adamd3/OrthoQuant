@@ -51,7 +51,6 @@ clone_meta$level7000 <- as.factor(clone_meta$level7000)
 clone_meta$ST <- as.factor(clone_meta$ST)
 
 clone_meta_sub <- subset(clone_meta, sample_name %in% colnames(norm_counts))
-clone_meta_sub <- merge(clone_meta_sub,trait_data, by = "majority_ST", all.x=TRUE)
 clone_meta_sub <- clone_meta_sub[match(colnames(norm_counts),clone_meta_sub$sample_name),]
 
 
