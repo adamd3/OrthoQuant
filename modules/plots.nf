@@ -1,5 +1,5 @@
 process UMAP_SAMPLES {
-    tag "$st_file"
+    tag "$tmm_counts"
     label 'process_medium'
     publishDir "${params.outdir}/umap_samples", mode: 'copy'
 
