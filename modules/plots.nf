@@ -12,6 +12,6 @@ process UMAP_SAMPLES {
 
     script:
     """
-    Rscript umap.R -n $tmm_counts -m $meta_merged -o ./
+    umap.R -n $tmm_counts -m $meta_merged -o ./
     """
 }
