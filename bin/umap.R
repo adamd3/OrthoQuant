@@ -1,6 +1,9 @@
 #!/usr/bin/env Rscript
 
 ## load / install packages
+if (!require("optparse")){
+    install.packages("optparse")
+}
 if (!require("umap")){
     install.packages("umap")
 }
