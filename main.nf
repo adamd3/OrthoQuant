@@ -77,13 +77,13 @@ workflow {
     /*
      *  Create channels for input files
      */
-    ch_metadata1
+    Channel
         .fromPath(params.meta_file)
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
 
-    ch_metadata2
+    Channel
         .fromPath(params.meta_file)
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
