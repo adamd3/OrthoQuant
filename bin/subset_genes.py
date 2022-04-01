@@ -2,7 +2,8 @@
 
 import argparse
 import pandas as pd
-import numpy as np
+# import numpy as np
+from math import nan
 from itertools import compress
 from collections import Counter
 
@@ -102,8 +103,8 @@ def find_core(gene_presence_absence, metadata_merged, min_ST_count, ST_file, str
             del gene_names[index]
         clone_sub.drop(clone_sub.index[rm_idx], inplace=True)
     else:
-        clone_sub.replace(';', np.NaN, regex=True, inplace=True)
-        clone_sub.replace('refound', np.NaN, regex=True, inplace=True)
+        clone_sub.replace(';', nan, regex=True, inplace=True)
+        clone_sub.replace('refound', nan, regex=True, inplace=True)
     if perc is not None:
         ## subset to genes present in at least `perc` strains
         na_counts = clone_sub.isnull().sum(axis=1)
