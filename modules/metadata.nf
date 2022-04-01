@@ -4,11 +4,10 @@ process MERGE_METADATA {
 
     input:
     path metadata
-    path sample_ID
+    path id_mappings
 
     output:
     path 'metadata_merged.tsv', emit: meta_merged
-    path 'id_mappings.csv', emit: id_mappings
 
     script:
     """
