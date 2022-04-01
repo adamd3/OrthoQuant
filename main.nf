@@ -87,104 +87,104 @@ workflow {
     ch_meta_merged = MERGE_METADATA.out.meta_merged
 
 
-    // /*
-    //  *  Create channels for input files
-    //  */
+    /*
+     *  Create channels for input files
+     */
+    ch_meta_merged
+        .splitCsv(header:true, sep:'\t')
+        .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+        .set { ch_raw_reads_trimgalore }
+
+    ch_meta_merged
+        .splitCsv(header:true, sep:'\t')
+        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+        .set { ch_clone_fasta_init }
+
+    // ch_st_file
+    //     .fromPath(params.st_file)
+    //     .splitText()
+    //     .view()
+
+    // extract the sample IDs only:
     // ch_meta_merged
-    //     .splitCsv(header:true, sep:'\t')
-    //     .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
-    //     .set { ch_raw_reads_trimgalore }
-    //
-    // ch_meta_merged
-    //     .splitCsv(header:true, sep:'\t')
-    //     .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
-    //     .set { ch_clone_fasta_init }
-    //
-    // // ch_st_file
-    // //     .fromPath(params.st_file)
-    // //     .splitText()
-    // //     .view()
-    //
-    // // extract the sample IDs only:
-    // // ch_meta_merged
-    // //     .splitCsv(header: true, sep:'\t')
-    // //     .map { row -> row.sample_id }
-    // //     .set { ch_clone_ids }
-    //
-    // /*
-    //  *  Trim reads
-    //  */
-    // if (params.skip_trimming) {
-    //     ch_trimmed_reads = ch_raw_reads_trimgalore.collect()
-    //     ch_trimgalore_results_mqc = Channel.empty()
-    //     ch_trimgalore_fastqc_reports_mqc = Channel.empty()
-    // } else {
-    //     TRIMGALORE (
-    //         ch_raw_reads_trimgalore
-    //     )
-    //     ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
-    //     ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
-    //     ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
-    // }
-    //
-    // /*
-    //  *  Get the subset of genes to be included in the analysis
-    //  */
-    // SUBSET_GENES (
-    //     ch_gpa_file,
-    //     ch_meta_merged,
-    //     params.perc,
-    //     params.min_ST_count,
-    // )
-    // ch_gene_subset = SUBSET_GENES.out.gene_subset
-    //
-    // /*
-    //  *  Create strain-specific fasta file; index it; pseudo-align trimmed reads
-    //  */
-    // KALLISTO_QUANT (
-    //     ch_gpa_file,
-    //     ch_clone_fasta_init,
-    //     ch_trimmed_reads
-    // )
-    // ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
-    //
-    // /*
-    //  *  Merge counts
-    //  */
-    // MERGE_COUNTS_AND_LENS (
-    //     ch_gpa_file,
-    //     ch_kallisto_out_dirs,
-    //     ch_meta_merged
-    // )
-    // ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out
-    //
-    // /*
-    //  *  Scale counts to median gene length across strains
-    //  */
-    // LENGTH_SCALE_COUNTS (
-    //     ch_kallisto_merged_out,
-    //     ch_gene_subset
-    // )
-    // ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
-    //
-    // /*
-    //  *  Get size-factor-scaled, TMM-normalised counts
-    //  */
-    // TMM_NORMALISE_COUNTS (
-    //     ch_kallisto_merged_out,
-    //     ch_gene_subset
-    // )
-    // ch_tmm_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
-    // // NB the resulting counts are log-transformed by default
-    //
-    // /*
-    //  *  UMAP of samples
-    //  */
-    // UMAP_SAMPLES (
-    //     ch_tmm_counts,
-    //     ch_meta_merged
-    // )
-    // ch_umap_out = UMAP_SAMPLES.out.umap_out
+    //     .splitCsv(header: true, sep:'\t')
+    //     .map { row -> row.sample_id }
+    //     .set { ch_clone_ids }
+
+    /*
+     *  Trim reads
+     */
+    if (params.skip_trimming) {
+        ch_trimmed_reads = ch_raw_reads_trimgalore.collect()
+        ch_trimgalore_results_mqc = Channel.empty()
+        ch_trimgalore_fastqc_reports_mqc = Channel.empty()
+    } else {
+        TRIMGALORE (
+            ch_raw_reads_trimgalore
+        )
+        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
+        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
+        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
+    }
+
+    /*
+     *  Get the subset of genes to be included in the analysis
+     */
+    SUBSET_GENES (
+        ch_gpa_file,
+        ch_meta_merged,
+        params.perc,
+        params.min_ST_count,
+    )
+    ch_gene_subset = SUBSET_GENES.out.gene_subset
+
+    /*
+     *  Create strain-specific fasta file; index it; pseudo-align trimmed reads
+     */
+    KALLISTO_QUANT (
+        ch_gpa_file,
+        ch_clone_fasta_init,
+        ch_trimmed_reads
+    )
+    ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
+
+    /*
+     *  Merge counts
+     */
+    MERGE_COUNTS_AND_LENS (
+        ch_gpa_file,
+        ch_kallisto_out_dirs,
+        ch_meta_merged
+    )
+    ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out
+
+    /*
+     *  Scale counts to median gene length across strains
+     */
+    LENGTH_SCALE_COUNTS (
+        ch_kallisto_merged_out,
+        ch_gene_subset
+    )
+    ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
+
+    /*
+     *  Get size-factor-scaled, TMM-normalised counts
+     */
+    TMM_NORMALISE_COUNTS (
+        ch_kallisto_merged_out,
+        ch_gene_subset
+    )
+    ch_tmm_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
+    // NB the resulting counts are log-transformed by default
+
+    /*
+     *  UMAP of samples
+     */
+    UMAP_SAMPLES (
+        ch_tmm_counts,
+        ch_meta_merged
+    )
+    ch_umap_out = UMAP_SAMPLES.out.umap_out
 
 }
 
