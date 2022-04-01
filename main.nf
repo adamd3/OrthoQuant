@@ -37,10 +37,6 @@ if (params.meta_file) {
     ch_metadata = file(params.meta_file, checkIfExists: true)
 } else { exit 1, 'Metadata file not specified!' }
 
-if (params.sample_ID_file) {
-    ch_sample_ID = file(params.sample_ID_file, checkIfExists: true)
-} else { exit 1, 'Sample ID file not specified!' }
-
 // if (params.multifasta_file) {
 //     ch_multifasta_file = file(params.multifasta_file, checkIfExists: true)
 // } else { exit 1, 'Multi-fasta file not specified!' }
@@ -79,23 +75,14 @@ include {UMAP_SAMPLES} from './modules/plots'
 workflow {
 
     /*
-     * Merge metadata from WGS and RNA-Seq
-     */
-    MERGE_METADATA (
-        ch_metadata, ch_sample_ID
-    )
-    ch_meta_merged = MERGE_METADATA.out.meta_merged
-
-
-    /*
      *  Create channels for input files
      */
-    ch_meta_merged
+    ch_metadata
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
 
-    ch_meta_merged
+    ch_metadata
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
