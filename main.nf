@@ -33,9 +33,9 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 //     ch_data_dir = file(params.data_dir, checkIfExists: true)
 // } else { exit 1, 'Data directory not specified!' }
 
-// if (params.meta_file) {
-//     ch_metadata = file(params.meta_file, checkIfExists: true)
-// } else { exit 1, 'Metadata file not specified!' }
+if (params.meta_file) {
+    ch_metadata = file(params.meta_file, checkIfExists: true)
+} else { exit 1, 'Metadata file not specified!' }
 
 // if (params.multifasta_file) {
 //     ch_multifasta_file = file(params.multifasta_file, checkIfExists: true)
@@ -121,7 +121,7 @@ workflow {
      */
     SUBSET_GENES (
         ch_gpa_file,
-        ch_meta_merged,
+        ch_metadata,
         params.perc,
         params.min_ST_count,
     )
@@ -143,7 +143,7 @@ workflow {
     MERGE_COUNTS_AND_LENS (
         ch_gpa_file,
         ch_kallisto_out_dirs,
-        ch_meta_merged
+        ch_metadata
     )
     ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out
 
@@ -171,7 +171,7 @@ workflow {
      */
     UMAP_SAMPLES (
         ch_tmm_counts,
-        ch_meta_merged
+        ch_metadata
     )
     ch_umap_out = UMAP_SAMPLES.out.umap_out
 
