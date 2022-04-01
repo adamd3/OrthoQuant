@@ -35,6 +35,7 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 
 if (params.meta_file) {
     ch_metadata = file(params.meta_file, checkIfExists: true)
+    ch_metadata.into { ch_metadata1; ch_metadata2 }
 } else { exit 1, 'Metadata file not specified!' }
 
 // if (params.multifasta_file) {
@@ -77,12 +78,12 @@ workflow {
     /*
      *  Create channels for input files
      */
-    ch_metadata
+    ch_metadata1
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
 
-    ch_metadata
+    ch_metadata2
         .splitCsv(header:true, sep:'\t')
         .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
