@@ -35,7 +35,7 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 
 if (params.meta_file) {
     // ch_metadata = file(params.meta_file, checkIfExists: true)
-    params = Channel.fromPath(params.meta_file)
+    ch_metadata = Channel.fromPath(params.meta_file)
     ch_metadata.into { ch_metadata1; ch_metadata2 }
 } else { exit 1, 'Metadata file not specified!' }
 
