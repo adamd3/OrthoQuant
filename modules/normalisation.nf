@@ -1,12 +1,14 @@
 process SUBSET_GENES {
-    tag "$st_file"
+    tag "$meta_merged"
     label 'process_medium'
     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
     input:
     path gpa_file
     path meta_merged
-    path st_file
+    // path st_file
+    // path strain_file
+    val min_st_count
     val perc
 
     output:
@@ -17,10 +19,13 @@ process SUBSET_GENES {
     subset_genes.py \
         --gene_presence_absence=$gpa_file \
         --metadata_merged=$meta_merged \
-        --ST_file=$st_file --perc=$perc \
+        --min_ST_count=$min_st_count \
+        --perc=$perc \
+        --rm_split=True --ref_only=False \
         --outf=gene_set_ST.tsv
     """
 }
+
 
 process LENGTH_SCALE_COUNTS {
     tag "$merged_lens"

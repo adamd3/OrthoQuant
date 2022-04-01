@@ -129,8 +129,8 @@ workflow {
     SUBSET_GENES (
         ch_gpa_file,
         ch_meta_merged,
-        params.st_file,
-        params.perc
+        params.perc,
+        params.min_ST_count,
     )
     ch_gene_subset = SUBSET_GENES.out.gene_subset
 
