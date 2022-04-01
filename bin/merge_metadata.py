@@ -10,15 +10,17 @@ def parse():
         "metadata_file", help = "contains clone ID and SRR ID for WGS data"
     )
     parser.add_argument(
+        "sample_ID_file", help = "contains DNA > RNA sample ID mappings"
+    )
+    parser.add_argument(
         "data_dir", help = "Directory containing downloaded RNA-seq data"
     )
     parser.add_argument("outf", help="File for results")
     args = parser.parse_args()
     merge_meta(**vars(args))
 
-def merge_meta(metadata_file, data_dir, outf):
-    id_mappings = os.path.join(data_dir, 'samplesheet/id_mappings.csv')
-    id_map_dat = pd.read_csv(id_mappings).iloc[:,[0,7]]
+def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
+    id_map_dat = pd.read_csv(sample_ID_file).iloc[:,[0,7]]
     clone_metadat = pd.read_csv(metadata_file, sep = "\t").iloc[:,:16]
     id_map_dat = id_map_dat.rename(
         columns={'sample': 'RNA_sample_id', 'sample_title': 'sample_name'}

@@ -37,6 +37,10 @@ if (params.meta_file) {
     ch_metadata = file(params.meta_file, checkIfExists: true)
 } else { exit 1, 'Metadata file not specified!' }
 
+if (params.sample_ID_file) {
+    ch_sample_ID = file(params.sample_ID_file, checkIfExists: true)
+} else { exit 1, 'Sample ID file not specified!' }
+
 // if (params.multifasta_file) {
 //     ch_multifasta_file = file(params.multifasta_file, checkIfExists: true)
 // } else { exit 1, 'Multi-fasta file not specified!' }
@@ -78,7 +82,7 @@ workflow {
      * Merge metadata from WGS and RNA-Seq
      */
     MERGE_METADATA (
-        ch_metadata
+        ch_metadata, ch_sample_ID
     )
     ch_meta_merged = MERGE_METADATA.out.meta_merged
 
@@ -205,11 +209,12 @@ def helpMessage() {
     log.info"""
     Usage:
     The typical command for running the pipeline is as follows:
-      nextflow run StrainSeq --data_dir [dir] --meta_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
+      nextflow run StrainSeq --data_dir [dir] --meta_file [file] --sample_ID_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
 
     Mandatory arguments:
       --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
       --meta_file [file]              Path to file containing sample metadata.
+      --sample_ID_file [file]         Path to file containing sample ID mappings.
       --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
                                       Available: conda, docker
