@@ -1,19 +1,5 @@
 #!/usr/bin/env Rscript
 
-## load / install packages
-if (!require("optparse")){
-    install.packages("optparse")
-}
-if (!require("umap")){
-    install.packages("umap")
-}
-if (!require("ggplot2")){
-    install.packages("ggplot2")
-}
-if (!require("RColorBrewer")){
-    install.packages("RColorBrewer")
-}
-
 option_list <- list(
     make_option(c("-n", "--norm_counts"), type="character", default=NULL,
         help="read counts normalised for both gene length and library size", metavar="character"),

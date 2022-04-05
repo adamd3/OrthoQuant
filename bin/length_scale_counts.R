@@ -1,16 +1,5 @@
 #!/usr/bin/env Rscript
 
-## load / install packages
-if (!require("optparse")){
-    install.packages("optparse")
-}
-if (!require("matrixStats")){
-    install.packages("matrixStats")
-}
-
-
-################################################
-## Arguments
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
         help="table of read counts per gene", metavar="character"),
@@ -35,7 +24,6 @@ gene_f <- opt$genes
 impute <- if(opt$impute == "TRUE") TRUE else FALS
 perc <- if(opt$perc == "TRUE") TRUE else FALSE
 outf <- opt$outf
-################################################
 
 
 ## Read data

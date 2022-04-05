@@ -1,17 +1,5 @@
 #!/usr/bin/env Rscript
 
-## load / install packages
-if (!require("optparse")){
-    install.packages("optparse")
-}
-if (!require("edgeR")){
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager")
-    BiocManager::install("edgeR")
-}
-if (!require("matrixStats")){
-    install.packages("matrixStats")
-}
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
