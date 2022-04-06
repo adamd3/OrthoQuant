@@ -93,7 +93,7 @@ rpkm_df <- fpkm(dds, robust = TRUE)
 
 if(isTRUE(log)){
     res_df <- log2(res_df+1)
-    rpkm_df <- log2(rpkm_df+1)
+    # rpkm_df <- log2(rpkm_df+1) ## update: don't log transform the RPKM vals
 }
 
 write.table(

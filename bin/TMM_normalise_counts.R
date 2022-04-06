@@ -87,7 +87,8 @@ y <- DGEList(
     genes = data.frame(gene.length = median_lens)
 )
 y <- calcNormFactors(y)
-rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log))
+# rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log))
+rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log transform the RPKM vals
 
 
 write.table(
