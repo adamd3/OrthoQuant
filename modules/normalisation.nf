@@ -50,6 +50,30 @@ process LENGTH_SCALE_COUNTS {
     """
 }
 
+process DESEQ_NORMALISE_COUNTS {
+    tag "$merged_counts"
+    label 'process_medium'
+    publishDir "${params.outdir}/gene_counts", mode: 'copy'
+
+    input:
+    tuple path(merged_counts), path(merged_lens)
+    path gene_subset
+
+    output:
+    path 'scaled_counts.tsv', emit: norm_counts
+    path 'rpkm_counts.tsv', emit: rpkm_counts
+
+    script:
+    """
+    DESeq2_normalise_counts.R \
+        -c $merged_counts \
+        -l $merged_lens \
+        -g $gene_subset \
+        -r FALSE -p TRUE -t TRUE \
+        -o ./
+    """
+}
+
 process TMM_NORMALISE_COUNTS {
     tag "$merged_counts"
     label 'process_medium'
@@ -60,7 +84,8 @@ process TMM_NORMALISE_COUNTS {
     path gene_subset
 
     output:
-    path 'kallisto_tmm_counts.tsv', emit: tmm_counts
+    path 'scaled_counts.tsv', emit: norm_counts
+    path 'rpkm_counts.tsv', emit: rpkm_counts
 
     script:
     """
@@ -69,6 +94,6 @@ process TMM_NORMALISE_COUNTS {
         -l $merged_lens \
         -g $gene_subset \
         -r FALSE -p TRUE -t TRUE \
-        -o kallisto_tmm_counts.tsv
+        -o ./
     """
 }

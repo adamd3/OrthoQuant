@@ -15,7 +15,7 @@ option_list <- list(
     make_option(c("-t", "--log_transform"), type="character", default=NULL,
         help="log transform the counts? default = FALSE", metavar="character"),
     make_option(c("-o", "--outdir"), type="character", default=NULL,
-        help="output directory for results", metavar="character")
+        help="output directory for results", metavar="character")s
 )
 
 opt_parser <- OptionParser(option_list=option_list)
@@ -58,6 +58,7 @@ if(isFALSE(perc)){
 counts_tab <- subset(counts_tab, Gene %in% core_genes)
 lengths_tab <- subset(lengths_tab, Gene %in% core_genes)
 
+
 rownames(counts_tab) <- rownames(lengths_tab) <- counts_tab$Gene
 counts_tab$Gene <- lengths_tab$Gene <- NULL
 
@@ -73,22 +74,27 @@ counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 counts_tab_scaled[is.na(counts_tab_scaled)] <- 0
 
 
-## get CPM
-y <- DGEList(counts = counts_tab_scaled)
-y <- calcNormFactors(y, method = "TMM")
-libSizes <- y$samples$lib.size
-res_df <- as.data.frame(cpm(
-    y, log = log, lib.size = (libSizes)*(y$samples$norm.factors)
+colData <- data.frame(sample_name = colnames(counts_tab_scaled))
+
+dds <- suppressMessages(DESeqDataSetFromMatrix(
+    countData = round(counts_tab_scaled),
+    colData = colData,
+    design = ~ 1
 ))
 
-## get RPKM
-y <- DGEList(
-    counts = counts_tab_scaled,
-    genes = data.frame(gene.length = median_lens)
-)
-y <- calcNormFactors(y)
-rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log))
+dds <- estimateSizeFactors(dds)
+res_df <- counts(dds, normalized=TRUE)
 
+
+## get RPKM per gene
+mcols(dds)$basepairs <- median_lens
+rpkm_df <- fpkm(dds, robust = TRUE)
+
+
+if(isTRUE(log)){
+    res_df <- log2(res_df+1)
+    rpkm_df <- log2(rpkm_df+1)
+}
 
 write.table(
     res_df, file.path(outdir,"scaled_counts.tsv"),

@@ -61,7 +61,7 @@ if (params.gpa_file) {
 // include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {KALLISTO_QUANT; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
-include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS} from './modules/normalisation'
+include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS; DESEQ_NORMALISE_COUNTS} from './modules/normalisation'
 include {UMAP_SAMPLES} from './modules/plots'
 
 
@@ -157,20 +157,30 @@ workflow {
     ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
 
     /*
-     *  Get size-factor-scaled, TMM-normalised counts
+     *  Get size-factor-scaled counts
      */
-    TMM_NORMALISE_COUNTS (
-        ch_kallisto_merged_out,
-        ch_gene_subset
-    )
-    ch_tmm_counts = TMM_NORMALISE_COUNTS.out.tmm_counts
+    if (params.norm_method == 'DESeq') {
+        DESEQ_NORMALISE_COUNTS (
+            ch_kallisto_merged_out,
+            ch_gene_subset
+        )
+        ch_norm_counts = DESEQ_NORMALISE_COUNTS.out.norm_counts
+    } else if (params.norm_method == 'TMM') {
+        TMM_NORMALISE_COUNTS (
+            ch_kallisto_merged_out,
+            ch_gene_subset
+        )
+        ch_norm_counts = TMM_NORMALISE_COUNTS.out.norm_counts
+    } else {
+        exit 1, 'Normalisation method not specified!'
+    }
     // NB the resulting counts are log-transformed by default
 
     /*
      *  UMAP of samples
      */
     UMAP_SAMPLES (
-        ch_tmm_counts,
+        ch_norm_counts,
         ch_metadata
     )
     ch_umap_out = UMAP_SAMPLES.out.umap_out
@@ -193,18 +203,20 @@ workflow.onComplete {
     ￼""".stripIndent()
 }
 
-
 def helpMessage() {
     log.info"""
     Usage:
     The typical command for running the pipeline is as follows:
-      nextflow run StrainSeq --data_dir [dir] --meta_file [file] --sample_ID_file [file] --gpa_file [gene_presence_absence.csv] -profile docker
+      nextflow run StrainSeq --data_dir [dir] --meta_file [file] --sample_ID_file [file] --gpa_file [gene_presence_absence.csv] --perc [str] --min_ST_count [str] --norm_method [str] -profile conda
 
     Mandatory arguments:
       --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
       --meta_file [file]              Path to file containing sample metadata.
       --sample_ID_file [file]         Path to file containing sample ID mappings.
       --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
+      --perc [str]                    Minimum percent of strains containing a gene for defining the core gene set.
+      --min_ST_count [str]            Minimum number of strains in a sequence type for inclusion in the analysis.
+      --norm_method [str]             How to perform size-factor scaling of counts for normalisation. Available options: DESeq, TMM.
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
                                       Available: conda, docker
 
