@@ -7,7 +7,7 @@ channels:
   - defaults
 dependencies:
   ## conda-forge packages
-  - conda-forge::python>=3.7
+  - conda-forge::python>=3.7,<3.8
   - conda-forge::numpy>=1.22
   - conda-forge::r-base>=3.6
   - conda-forge::r-optparse>=1.7
