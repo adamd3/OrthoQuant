@@ -29,10 +29,6 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 ================================================================================
 */
 
-// if (params.data_dir) {
-//     ch_data_dir = file(params.data_dir, checkIfExists: true)
-// } else { exit 1, 'Data directory not specified!' }
-
 if (params.meta_file) {
     ch_metadata = file(params.meta_file, checkIfExists: true)
 } else { exit 1, 'Metadata file not specified!' }
@@ -178,7 +174,8 @@ workflow {
      */
     UMAP_SAMPLES (
         ch_norm_counts,
-        ch_metadata
+        ch_metadata,
+        params.group
     )
     ch_umap_out = UMAP_SAMPLES.out.umap_out
 
@@ -204,12 +201,12 @@ def helpMessage() {
     log.info"""
     Usage:
     The typical command for running the pipeline is as follows:
-      nextflow run StrainSeq --data_dir [dir] --meta_file [file] --gpa_file [gene_presence_absence.csv] --perc [str] --norm_method [str] -profile conda
+      nextflow run StrainSeq --meta_file [file] --gpa_file [gene_presence_absence.csv] --group [str] --perc [str] --norm_method [str] -profile conda
 
     Mandatory arguments:
-      --data_dir [file]               Path to directory containing FastQ files retrieved using the nf-core/fetchngs pipeline.
       --meta_file [file]              Path to file containing sample metadata.
       --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
+      --group [str]                   Metadata column to use for grouping strains. Default = majority_ST.
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
                                       Available: conda, docker
 

@@ -4,6 +4,12 @@ import argparse
 import pandas as pd
 import os.path
 
+    "/projects/pseudomonas_transcriptomics/storage/hzi_meta.txt" \
+    "/projects/pseudomonas_transcriptomics/storage/fastq_files/samplesheet/id_mappings.csv" \
+    "/projects/pseudomonas_transcriptomics/storage/fastq_files" \
+    "/home/adam/pseudomonas_transcriptomics/meta_merged.txt"
+
+
 def parse():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -25,11 +31,15 @@ def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
     id_map_dat = id_map_dat.rename(
         columns={
         'sample': 'RNA_sample_id',
-        'sample_id': 'DNA_sample_id',
         'sample_title': 'sample_name'
         }
     )
     merged_meta = clone_metadat.merge(id_map_dat, on='sample_name')
+    merged_meta = merged_meta.rename(
+        columns={
+        'sample_id': 'DNA_sample_id'
+        }
+    )
     ## move RNA column to front of df
     merged_meta = merged_meta[
         ['RNA_sample_id'] +

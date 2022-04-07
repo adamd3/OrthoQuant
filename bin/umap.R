@@ -5,6 +5,8 @@ option_list <- list(
         help="read counts normalised for both gene length and library size", metavar="character"),
     make_option(c("-m", "--metadata_merged"), type="character", default=NULL,
         help="merged metadata mapping strain ID to RNA ID", metavar="character"),
+    make_option(c("-g", "--group"), type="character", default=NULL,
+        help="metadata column for grouping strains", metavar="character"),
     make_option(c("-o", "--outdir"), type="character", default=NULL,
         help="directory for results", metavar="character")
 )
@@ -14,6 +16,7 @@ opt <- parse_args(opt_parser)
 
 counts_f <- opt$norm_counts
 meta_f <- opt$metadata_merged
+group <- opt$group
 outdir <- opt$outdir
 
 
@@ -32,10 +35,10 @@ norm_counts <- log2(norm_counts+1)
 clone_meta <- read.table(
     meta_f, header = TRUE, sep = "\t", stringsAsFactors = FALSE
 )
-clone_meta$majority_ST <- as.factor(clone_meta$majority_ST)
-clone_meta$infection_type <- as.factor(clone_meta$infection_type)
-clone_meta$level7000 <- as.factor(clone_meta$level7000)
-clone_meta$ST <- as.factor(clone_meta$ST)
+clone_meta[[group]] <- as.factor(clone_meta[[group]])
+# clone_meta$infection_type <- as.factor(clone_meta$infection_type)
+# clone_meta$level7000 <- as.factor(clone_meta$level7000)
+# clone_meta$ST <- as.factor(clone_meta$ST)
 
 clone_meta_sub <- subset(clone_meta, sample_name %in% colnames(norm_counts))
 clone_meta_sub <- clone_meta_sub[match(colnames(norm_counts),clone_meta_sub$sample_name),]
@@ -61,7 +64,7 @@ saveRDS(umap_adj, file.path(outdir,'umap.rds'))
 
 p1 <- ggplot(umap_adj_dims, aes(x = UMAP_1, y = UMAP_2)) +
     geom_point(size = 4,  shape = 21, colour = "black",
-        aes_string(fill = "majority_ST")
+        aes_string(fill = group)
     ) +
     scale_colour_manual(values = colpal_large, guide = "none") +
     scale_fill_manual(values = colpal_large) +
@@ -74,7 +77,7 @@ p1 <- ggplot(umap_adj_dims, aes(x = UMAP_1, y = UMAP_2)) +
     )
 
 ggsave(
-    p1, file = file.path(outdir,'umap_majority_ST.png'),
+    p1, file = file.path(outdir,paste0('umap_',group,'.png')),
     device = "png", units = "in",
     width = 9, height = 7, dpi = 300
 )
