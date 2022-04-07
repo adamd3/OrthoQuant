@@ -159,22 +159,20 @@ workflow {
     /*
      *  Get size-factor-scaled counts
      */
-    if (params.norm_method == 'DESeq') {
-        DESEQ_NORMALISE_COUNTS (
-            ch_kallisto_merged_out,
-            ch_gene_subset
-        )
-        ch_norm_counts = DESEQ_NORMALISE_COUNTS.out.norm_counts
-    } else if (params.norm_method == 'TMM') {
+    if (params.norm_method == 'TMM') {
         TMM_NORMALISE_COUNTS (
             ch_kallisto_merged_out,
             ch_gene_subset
         )
         ch_norm_counts = TMM_NORMALISE_COUNTS.out.norm_counts
     } else {
-        exit 1, 'Normalisation method not specified!'
+        DESEQ_NORMALISE_COUNTS (
+            ch_kallisto_merged_out,
+            ch_gene_subset
+        )
+        ch_norm_counts = DESEQ_NORMALISE_COUNTS.out.norm_counts
     }
-    // NB the resulting counts are log-transformed by default
+    // NB the scaled counts are log-transformed by default; the RPKM counts are not
 
     /*
      *  UMAP of samples
@@ -216,11 +214,12 @@ def helpMessage() {
       --gpa_file [file]               Path to file containing gene presence/absence per strain (from Panaroo output).
       --perc [str]                    Minimum percent of strains containing a gene for defining the core gene set.
       --min_ST_count [str]            Minimum number of strains in a sequence type for inclusion in the analysis.
-      --norm_method [str]             How to perform size-factor scaling of counts for normalisation. Available options: DESeq, TMM.
       -profile [str]                  Configuration profile to use. Can use multiple (comma separated).
                                       Available: conda, docker
 
     Other options:
+      --norm_method [str]             How to perform size-factor scaling of counts for normalisation. Available options: DESeq (default), TMM.
+      --skip_trimming [bool]          Do not trim adaptors from FastQ files.
       --outdir [file]                 The output directory where the results will be saved (Default: './results').
       -name [str]                     Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
 

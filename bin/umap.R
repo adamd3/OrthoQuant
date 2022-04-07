@@ -27,6 +27,7 @@ colpal_large[c(5:8)] <- colpal_large[c(70:73)] ## replace to avoid colour clashe
 ## Read and process data
 ##------------------------------------------------------------------------------
 norm_counts <- read.table(counts_f)
+norm_counts <- log2(norm_counts+1)
 
 clone_meta <- read.table(
     meta_f, header = TRUE, sep = "\t", stringsAsFactors = FALSE

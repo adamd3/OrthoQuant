@@ -8,8 +8,6 @@ option_list <- list(
         help="table of effective lengths per gene", metavar="character"),
     make_option(c("-g", "--genes"), type="character", default=NULL,
         help="core gene subset to be used", metavar="character"),
-    make_option(c("-r", "--rpkm"), type="character", default=FALSE,
-        help="return RPKM/FPKM values? default = FALSE", metavar="character"),
     make_option(c("-p", "--perc"), type="character", default=NULL,
         help="was filtering based on percentage presence of gene?", metavar="character"),
     make_option(c("-t", "--log_transform"), type="character", default=NULL,
@@ -24,7 +22,6 @@ opt <- parse_args(opt_parser)
 counts_f <- opt$counts
 lengths_f <- opt$lengths
 gene_f <- opt$genes
-rpkm <- if(opt$rpkm == "TRUE") TRUE else FALSE
 perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir

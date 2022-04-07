@@ -1,10 +1,10 @@
 process UMAP_SAMPLES {
-    tag "$tmm_counts"
+    tag "$norm_counts"
     label 'process_medium'
     publishDir "${params.outdir}/umap_samples", mode: 'copy'
 
     input:
-    path tmm_counts
+    path norm_counts
     path meta_merged
 
     output:
@@ -12,6 +12,6 @@ process UMAP_SAMPLES {
 
     script:
     """
-    umap.R -n $tmm_counts -m $meta_merged -o ./
+    umap.R -n $norm_counts -m $meta_merged -o ./
     """
 }
