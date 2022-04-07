@@ -25,7 +25,7 @@ def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
     id_map_dat = id_map_dat.rename(
         columns={
         'sample': 'RNA_sample_id',
-        'sample_id': 'DNA_sample_id'
+        'sample_id': 'DNA_sample_id',
         'sample_title': 'sample_name'
         }
     )
