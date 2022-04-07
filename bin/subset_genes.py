@@ -48,6 +48,7 @@ def find_core(gene_presence_absence, metadata_merged, perc, rm_split, ref_only, 
     metadata = metadata[metadata['DNA_sample_id'].isin(colnames)]
     clone_names = metadata['DNA_sample_id'].tolist()
     clone_data = csv_data[csv_data.columns.intersection(clone_names)]
+    clone_sub = clone_data[clone_names].copy(deep=True)
     colnames_clone = clone_data.columns.values.tolist()
     ## sort metadata to match the clone_data
     metadata.DNA_sample_id = metadata.DNA_sample_id.astype("category")
