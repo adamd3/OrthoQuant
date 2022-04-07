@@ -80,13 +80,13 @@ workflow {
     Channel
         .fromPath(params.meta_file)
         .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+        .map { row -> [ row.DNA_sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
         .set { ch_raw_reads_trimgalore }
 
     Channel
         .fromPath(params.meta_file)
         .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+        .map { row -> [ row.DNA_sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
         .set { ch_clone_fasta_init }
 
     // ch_st_file
@@ -97,7 +97,7 @@ workflow {
     // extract the sample IDs only:
     // ch_meta_merged
     //     .splitCsv(header: true, sep:'\t')
-    //     .map { row -> row.sample_id }
+    //     .map { row -> row.DNA_sample_id }
     //     .set { ch_clone_ids }
 
     /*

@@ -30,21 +30,21 @@ def merge_counts(gene_presence_absence, metadata_merged, ST_file, outf):
     st_tab = pd.read_csv(ST_file, sep = "\t", header=None)
     colnames = csv_data.columns.values.tolist()
     gene_names = csv_data.iloc[:,0].tolist()
-    metadata = metadata[metadata['sample_id'].isin(colnames)]
+    metadata = metadata[metadata['DNA_sample_id'].isin(colnames)]
     ## subset to STs in list
     keep_ST = st_tab[0].tolist()
     keep_ST = [str(st) for st in keep_ST]
     meta_sub = metadata[metadata['majority_ST'].isin(keep_ST)]
     quant_dfs = []
     for index, row in meta_sub.iterrows():
-        sample_id = row['sample_id']
+        DNA_sample_id = row['DNA_sample_id']
         sample_name = row['sample_name']
-        quant_file = os.path.join('kallisto_'+sample_id, 'abundance.tsv')
+        quant_file = os.path.join('kallisto_'+DNA_sample_id, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "eff_length"]]
-        quant_dat = quant_dat.rename(columns={'target_id': sample_id})
-        cg = csv_data[["Gene", sample_id]]
-        quant_merged = pd.merge(cg, quant_dat, on=sample_id)
+        quant_dat = quant_dat.rename(columns={'target_id': DNA_sample_id})
+        cg = csv_data[["Gene", DNA_sample_id]]
+        quant_merged = pd.merge(cg, quant_dat, on=DNA_sample_id)
         quant_merged = quant_merged[["Gene", "eff_length"]]
         quant_merged = quant_merged.rename(columns={'eff_length': sample_name})
         quant_dfs.append(quant_merged)
