@@ -6,9 +6,6 @@ process SUBSET_GENES {
     input:
     path gpa_file
     path meta_merged
-    // path st_file
-    // path strain_file
-    val min_st_count
     val perc
 
     output:
@@ -19,7 +16,6 @@ process SUBSET_GENES {
     subset_genes.py \
         --gene_presence_absence=$gpa_file \
         --metadata_merged=$meta_merged \
-        --min_ST_count=$min_st_count \
         --perc=$perc \
         --rm_split=True --ref_only=False \
         --outf=gene_set_ST.tsv

@@ -23,7 +23,11 @@ def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
     id_map_dat = pd.read_csv(sample_ID_file).iloc[:,[0,7]]
     clone_metadat = pd.read_csv(metadata_file, sep = "\t").iloc[:,:16]
     id_map_dat = id_map_dat.rename(
-        columns={'sample': 'RNA_sample_id', 'sample_title': 'sample_name'}
+        columns={
+        'sample': 'RNA_sample_id',
+        'sample_id': 'DNA_sample_id'
+        'sample_title': 'sample_name'
+        }
     )
     merged_meta = clone_metadat.merge(id_map_dat, on='sample_name')
     ## move RNA column to front of df
