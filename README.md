@@ -24,7 +24,7 @@ The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](ht
 ## Required input
 
 
-- __Metadata file__ Tab-delimited file, which must contain at least the following named columns:
+- __Metadata file__: Tab-delimited file, which must contain at least the following named columns:
   - `RNA_sample_id`: transcriptome sample identifier
   - `DNA_sample_id`: genome sample identifier
   - `sample_name`: strain name
@@ -42,7 +42,7 @@ The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](ht
     SRX5123719	SRR8737290	PSAE1745	111	3	111	3PSAE1745	respiratory tract	/path/to/fastq/SRX5123719_T1.fastq.gz	/path/to/fasta/SRR8737290.fna
     ```
 
-- __Gene presence-absence file__ CSV file produced by ([`Panaroo`](https://gtonkinhill.github.io/panaroo/)).
+- __Gene presence-absence file__: CSV-format output produced by ([`Panaroo`](https://gtonkinhill.github.io/panaroo/)).
   See below example (truncated):
 
     ```console
@@ -57,3 +57,13 @@ The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](ht
     emrE,emrE,SMR multidrug efflux transporterMethyl viologen resistance protein Cmultidrug efflux proteinMembrane transporters of cations and cationic drugsphosphonate utilization associated putative membrane proteinSmall Multidrug Resistance protein;SMR multidrug efflux transporterMethyl viologen resistance protein Cmultidrug efflux proteinMembrane transporters of cations and cationic drugsSmall Multidrug Resistance protein,PGD112851,SRR8737281_00400,SRR8737282_00337
     purA_1~~~purA_2~~~purA,purA_1;purA_2;purA,adenylosuccinate synthetaseAdenylosuccinate synthetaseadenylosuccinate synthetaseadenylosuccinate synthaseAdenylosuccinate synthetase,PGD112747,SRR8737281_00453,SRR8737282_00390
     ```
+
+## Output
+
+1. __trim_galore__ directory containing adaptor-trimmed RNA-Seq files and FastQC results.
+2. __gene_counts__ directory containing:
+    1. `gene_set_ST.tsv`: the subset of genes included in analysis.
+    2. `raw_counts.tsv`: merged read counts per gene, scaled to the median gene length across strains.
+    3. `norm_counts.tsv`: size factor scaled counts (normalised for library size).
+    4. `rpkm_counts.tsv`: size factor scaled and gene length-scaled counts, expressed as reads per kilobase per million mapped reads (RPKM) (normalised for library size and gene length).
+3. __umap_samples__ directory containing UMAP visualisation of gene expression across strains.

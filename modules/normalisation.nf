@@ -33,7 +33,7 @@ process LENGTH_SCALE_COUNTS {
     path gene_subset
 
     output:
-    path 'kallisto_scaled_counts.tsv', emit: scaled_counts
+    path 'raw_counts.tsv', emit: scaled_counts
 
     script:
     """
@@ -42,7 +42,7 @@ process LENGTH_SCALE_COUNTS {
         -l $merged_lens \
         -g $gene_subset \
         -i TRUE -p TRUE \
-        -o kallisto_scaled_counts.tsv
+        -o raw_counts.tsv
     """
 }
 
@@ -56,7 +56,7 @@ process DESEQ_NORMALISE_COUNTS {
     path gene_subset
 
     output:
-    path 'scaled_counts.tsv', emit: norm_counts
+    path 'norm_counts.tsv', emit: norm_counts
     path 'rpkm_counts.tsv', emit: rpkm_counts
 
     script:
@@ -80,7 +80,7 @@ process TMM_NORMALISE_COUNTS {
     path gene_subset
 
     output:
-    path 'scaled_counts.tsv', emit: norm_counts
+    path 'norm_counts.tsv', emit: norm_counts
     path 'rpkm_counts.tsv', emit: rpkm_counts
 
     script:

@@ -89,7 +89,7 @@ rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log tran
 
 
 write.table(
-    res_df, file.path(outdir,"scaled_counts.tsv"),
+    res_df, file.path(outdir,"norm_counts.tsv"),
     col.names = TRUE, row.names = TRUE,
     sep = "\t", quote = FALSE
 )
