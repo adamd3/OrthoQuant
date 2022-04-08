@@ -14,7 +14,7 @@ dependencies:
   - conda-forge::textwrap3>=0.9
   - conda-forge::pandas>=1.4
   - conda-forge::r-base>=3.6
-  - conda-forge::r-optparse>=1.7
+  - conda-forge::r-optparse>=1.5
   - conda-forge::r-rcolorbrewer>=1
   - conda-forge::r-reshape2>=1.4
   - conda-forge::r-ggplot2>=3.3
