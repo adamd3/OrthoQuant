@@ -13,7 +13,7 @@ option_list <- list(
     make_option(c("-t", "--log_transform"), type="character", default=NULL,
         help="log transform the counts? default = FALSE", metavar="character"),
     make_option(c("-o", "--outdir"), type="character", default=NULL,
-        help="output directory for results", metavar="character")s
+        help="output directory for results", metavar="character")
 )
 
 opt_parser <- OptionParser(option_list=option_list)
