@@ -39,13 +39,11 @@ process MERGE_COUNTS_AND_LENS {
     merge_kallisto_counts.py \
         --gene_presence_absence=$gpa_file \
         --metadata_merged=$meta_merged \
-        --ST_file=${params.st_file} \
         --outf=kallisto_merged_counts.tsv
 
     merge_kallisto_lens.py \
         --gene_presence_absence=$gpa_file \
         --metadata_merged=$meta_merged \
-        --ST_file=${params.st_file} \
         --outf=kallisto_merged_lens.tsv
     """
 }

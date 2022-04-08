@@ -16,27 +16,18 @@ def parse():
         "--metadata_merged",
         help = "TSV file mapping clone names with sequence data sample names"
     )
-    parser.add_argument(
-        "--ST_file",
-        help = "File containing specific STs to be included"
-    )
     parser.add_argument("--outf", help="File for results")
     args = parser.parse_args()
     merge_counts(**vars(args))
 
-def merge_counts(gene_presence_absence, metadata_merged, ST_file, outf):
+def merge_counts(gene_presence_absence, metadata_merged, outf):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     metadata = pd.read_csv(metadata_merged, sep = "\t")
-    st_tab = pd.read_csv(ST_file, sep = "\t", header=None)
     colnames = csv_data.columns.values.tolist()
     gene_names = csv_data.iloc[:,0].tolist()
     metadata = metadata[metadata['DNA_sample_id'].isin(colnames)]
-    ## subset to STs in list
-    keep_ST = st_tab[0].tolist()
-    keep_ST = [str(st) for st in keep_ST]
-    meta_sub = metadata[metadata['majority_ST'].isin(keep_ST)]
     quant_dfs = []
-    for index, row in meta_sub.iterrows():
+    for index, row in metadata.iterrows():
         DNA_sample_id = row['DNA_sample_id']
         sample_name = row['sample_name']
         quant_file = os.path.join('kallisto_'+DNA_sample_id, 'abundance.tsv')
