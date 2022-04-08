@@ -24,7 +24,20 @@ The pipeline will perform the following steps:
 ## Required input
 
 
-* Metadata file. Must contain the below named columns (additional columns are optional):
+- Metadata file. Must contain the following named columns:
+  - `RNA_sample_id`: transcriptome sample identifier
+  - `DNA_sample_id`: genome sample identifier
+  - `sample_name`: strain name
+  - `fastq`: path to fastq file for RNA-Seq data
+  - `fasta`: path to fasta file containing gene sequences
+  Additional columns are optional. See below example:
+
     ```console
-    
+    RNA_sample_id	DNA_sample_id	sample_name	majority_ST	level7000	ST	patient	infection_type	fastq	fasta
+    SRX5123744	SRR8737283	ZG302367	274	4	274	7ZG302367	ear infection	/path/to/fastq/SRX5123744_T1.fastq.gz	/path/to/fasta/SRR8737283.fna
+    SRX5123743	SRR8737284	ZG302359	244	5	244	7ZG302359	pyrexia	/path/to/fastq/SRX5123743_T1.fastq.gz	/path/to/fasta/SRR8737284.fna
+    SRX5123714	SRR8737286	PSAE1649	313	2	313	PSAE1649	wound infection	/path/to/fastq/SRX5123714_T1.fastq.gz	/path/to/fasta/SRR8737286.fna
+    SRX5123695	SRR8737287	MHH17441	235	6	235	4MHH17441	urinary tract	/path/to/fastq/SRX5123695_T1.fastq.gz	/path/to/fasta/SRR8737287.fna
+    SRX5123726	SRR8737288	PSAE1975	395	7	395	1PSAE1975	wound infection	/path/to/fastq/SRX5123726_T1.fastq.gz	/path/to/fasta/SRR8737288.fna
+    SRX5123719	SRR8737290	PSAE1745	111	3	111	3PSAE1745	respiratory tract	/path/to/fastq/SRX5123719_T1.fastq.gz	/path/to/fasta/SRR8737290.fna
     ```
