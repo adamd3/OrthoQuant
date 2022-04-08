@@ -11,7 +11,7 @@
 
 ## Pipeline summary
 
-The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](https://gtonkinhill.github.io/panaroo/)) and will perform the following steps:
+The pipeline requires the output from a pan-genome analysis with [`Panaroo`](https://gtonkinhill.github.io/panaroo/) and will perform the following steps:
 
 1. Trim adaptors from reads ([`Trim Galore!`](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/))
 2. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
