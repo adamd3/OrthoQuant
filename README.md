@@ -24,7 +24,7 @@ The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](ht
 ## Required input
 
 
-- __Metadata file__: Tab-delimited file, which must contain at least the following named columns:
+- __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
   - `RNA_sample_id`: transcriptome sample identifier
   - `DNA_sample_id`: genome sample identifier
   - `sample_name`: strain name
@@ -42,7 +42,7 @@ The pipeline requires the output from a pan-genome analysis with ([`Panaroo`](ht
     SRX5123719	SRR8737290	PSAE1745	111	3	111	3PSAE1745	respiratory tract	/path/to/fastq/SRX5123719_T1.fastq.gz	/path/to/fasta/SRR8737290.fna
     ```
 
-- __Gene presence-absence file__: CSV-format output produced by ([`Panaroo`](https://gtonkinhill.github.io/panaroo/)).
+- __Gene presence-absence file__: CSV-format output produced by [`Panaroo`](https://gtonkinhill.github.io/panaroo/).
   See below example (truncated):
 
     ```console
