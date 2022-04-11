@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 library(optparse)
+library(matrixStats)
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
