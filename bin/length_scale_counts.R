@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+library(optparse)
+
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
         help="table of read counts per gene", metavar="character"),

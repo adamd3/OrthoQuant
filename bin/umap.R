@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
 
+library(umap)
+library(ggplot2)
+library(RColorBrewer)
+
 option_list <- list(
     make_option(c("-n", "--norm_counts"), type="character", default=NULL,
         help="read counts normalised for both gene length and library size", metavar="character"),
