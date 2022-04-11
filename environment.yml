@@ -22,6 +22,7 @@ dependencies:
   - conda-forge::r-scales>=1.1
   - conda-forge::r-pheatmap>=1.0
   - conda-forge::r-matrixstats>=0.6
+  - conda-forge::r-umap>=0.2
 
   ## bioconda packages
   - bioconda::fastqc>=0.11
