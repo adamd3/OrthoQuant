@@ -29,7 +29,7 @@ large_disc_pal <- brewer.pal.info[brewer.pal.info$category == 'qual',]
 colpal_large <- unlist(
     mapply(brewer.pal, large_disc_pal$maxcolors, rownames(large_disc_pal)))
 colpal_large[c(5:8)] <- colpal_large[c(70:73)] ## replace to avoid colour clashes
-
+colpal_large <- c(colpal_large, colpal_large)
 
 ##------------------------------------------------------------------------------
 ## Read and process data
