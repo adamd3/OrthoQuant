@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 
+library(optparse)
 library(umap)
 library(ggplot2)
 library(RColorBrewer)
