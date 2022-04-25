@@ -23,7 +23,7 @@ The pipeline requires the output from a pan-genome analysis with [`Panaroo`](htt
 
 ## Installation
 
-You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.+) and [`Conda`](https://docs.conda.io/en/latest/). Docker support has not yet been added.
+You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.10.3+).
 
 You can run the pipeline as follows:
 
