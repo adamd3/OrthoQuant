@@ -27,7 +27,7 @@ You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.+) a
 
 You can run the pipeline as follows:
 
-    ```console
+    ```
     nextflow run /path/to/StrainSeq \
         --data_dir /path/to/fastq_files \
         --meta_file /path/to/metadata.txt \
