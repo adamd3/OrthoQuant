@@ -21,9 +21,29 @@ The pipeline requires the output from a pan-genome analysis with [`Panaroo`](htt
 6. Size-factor scaling of merged counts ([`DESeq2`](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) or [`edgeR`](http://bioconductor.org/packages/release/bioc/html/edgeR.html))
 7. Visualisation of gene expression across strains ([`UMAP`](https://umap-learn.readthedocs.io/))
 
-## Prerequisites
+## Installation
 
 You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.+) and [`Conda`](https://docs.conda.io/en/latest/). Docker support has not yet been added.
+
+You can run the pipeline as follows:
+
+    ```console
+    nextflow run /path/to/StrainSeq \
+        --data_dir /path/to/fastq_files \
+        --meta_file /path/to/metadata.txt \
+        --gpa_file /path/to/gene_presence_absence.csv \
+        --perc 99 --norm_method DESeq --group majority_ST -profile conda -resume
+    ```
+
+Explanation of parameters:
+- `data_dir`: directory containing RNA-Seq FASTQ files.
+- `meta_file`: metadata file (see below).
+- `gpa_file`: gene presence/absence file from Panaroo (see below).
+- `perc`: defines the minimum percent of strains containing a gene for inclusion in the analysis (for example, `--perc 99` means that a gene must be present in 99% of strains for it to be included).
+- `norm_method`: how to perform size-factor scaling of counts (default method = `DESeq2`). Other options: `TMM` (edgeR).
+- `group`: group for plots - must be one of the columns in metadata file.
+
+
 
 ## Required input
 
