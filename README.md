@@ -32,6 +32,10 @@ You can run the pipeline as follows:
         --gpa_file /path/to/gene_presence_absence.csv \
         --perc 99 --norm_method DESeq --group majority_ST -profile conda -resume
 
+You can run with [`Docker`](https://www.docker.com/) or [`Singularity`](https://sylabs.io/guides/3.5/user-guide/introduction.html) by specifying ` -profile docker` or ` -profile singularity`, respectively.
+
+The `-resume` parameter will re-start the pipeline if it has been previously run.
+
 Explanation of parameters:
 - `meta_file`: metadata file (see below).
 - `gpa_file`: gene presence/absence file from Panaroo (see below).
