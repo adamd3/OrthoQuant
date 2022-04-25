@@ -27,13 +27,11 @@ You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.+) a
 
 You can run the pipeline as follows:
 
-    ```
     nextflow run /path/to/StrainSeq \
         --data_dir /path/to/fastq_files \
         --meta_file /path/to/metadata.txt \
         --gpa_file /path/to/gene_presence_absence.csv \
         --perc 99 --norm_method DESeq --group majority_ST -profile conda -resume
-    ```
 
 Explanation of parameters:
 - `data_dir`: directory containing RNA-Seq FASTQ files.
