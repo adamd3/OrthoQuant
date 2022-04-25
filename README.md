@@ -21,8 +21,11 @@ The pipeline requires the output from a pan-genome analysis with [`Panaroo`](htt
 6. Size-factor scaling of merged counts ([`DESeq2`](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) or [`edgeR`](http://bioconductor.org/packages/release/bioc/html/edgeR.html))
 7. Visualisation of gene expression across strains ([`UMAP`](https://umap-learn.readthedocs.io/))
 
-## Required input
+## Prerequisites
 
+You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.+) and [`Conda`](https://docs.conda.io/en/latest/). Docker support has not yet been added.
+
+## Required input
 
 - __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
   - `RNA_sample_id`: transcriptome sample identifier
