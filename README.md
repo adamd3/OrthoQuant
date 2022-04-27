@@ -48,8 +48,7 @@ Explanation of parameters:
 ## Required input
 
 - __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
-  - `RNA_sample_id`: transcriptome sample identifier
-  - `DNA_sample_id`: genome sample identifier
+  - `DNA_sample_id`: gene sequence sample identifier
   - `sample_name`: strain name
   - `fastq`: path to fastq file for RNA-Seq data
   - `fasta`: path to fasta file containing gene sequences
