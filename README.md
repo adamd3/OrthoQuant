@@ -39,7 +39,7 @@ The `-resume` parameter will re-start the pipeline if it has been previously run
 Explanation of parameters:
 - `meta_file`: metadata file (see below).
 - `gpa_file`: gene presence/absence file from Panaroo (see below).
-- `perc`: defines the minimum percent of strains containing a gene for inclusion in the analysis (for example, `--perc 99` means that a gene must be present in 99% of strains for it to be included).
+- `perc`: defines the minimum percent of strains containing a gene for inclusion in the analysis (for example, --perc 99 means that a gene must be present in 99% of strains for it to be included).
 - `norm_method`: how to perform size-factor scaling of counts (default method = `DESeq2`). Other options: `TMM` (edgeR).
 - `group`: group for plots - must be one of the columns in metadata file.
 
