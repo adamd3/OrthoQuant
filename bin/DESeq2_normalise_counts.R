@@ -1,7 +1,19 @@
 #!/usr/bin/env Rscript
 
+
+if (!require("optparse")){
+    install.packages("optparse")
+}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+if (!require("DESeq2")){
+    BiocManager::install("DESeq2")
+}
+
 library(optparse)
 library(DESeq2)
+
+
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,

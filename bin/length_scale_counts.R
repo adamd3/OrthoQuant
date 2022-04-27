@@ -1,5 +1,14 @@
 #!/usr/bin/env Rscript
 
+
+if (!require("optparse")){
+    install.packages("optparse")
+}
+if (!require("matrixStats")){
+    install.packages("matrixStats")
+}
+
+
 library(optparse)
 library(matrixStats)
 

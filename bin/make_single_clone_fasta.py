@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import pandas as pd
+# import pandas as pd
 import os.path
-import textwrap
+import csv
+# import textwrap
 from pyfaidx import Fasta
 
 def parse():
@@ -24,16 +25,18 @@ def parse():
     make_fasta(**vars(args))
 
 def make_fasta(multifasta_file, gene_presence_absence, strain_name):
-    csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
-    colnames = csv_data.columns.values.tolist()
-    # if os.path.exists(multifasta_file):
+    input_file = csv.DictReader(open(gene_presence_absence))
+    strain_genes = []
+    for row in input_file:
+        gene = (row[strain_name])
+        strain_genes.append(gene)
+    strain_genes = list(filter(None, strain_genes))
     gene_seq = Fasta(multifasta_file)
-    strain_genes = csv_data[strain_name].tolist()
     genes_present = [gene for gene in strain_genes if gene in gene_seq.keys()]
     outf = os.path.normpath(strain_name+'_ss.fna')
     f = open(outf, 'a')
     for gene in genes_present:
-        seq = '\n'.join(textwrap.wrap(str(gene_seq[gene]), 50))
+        seq = str(gene_seq[gene])
         f.write(">"+gene+"\n"+seq+"\n")
     f.close()
 

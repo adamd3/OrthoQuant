@@ -1,5 +1,19 @@
 #!/usr/bin/env Rscript
 
+if (!require("optparse")){
+    install.packages("optparse")
+}
+if (!require("umap")){
+    install.packages("umap")
+}
+if (!require("ggplot2")){
+    install.packages("ggplot2")
+}
+if (!require("RColorBrewer")){
+    install.packages("RColorBrewer")
+}
+
+
 library(optparse)
 library(umap)
 library(ggplot2)
