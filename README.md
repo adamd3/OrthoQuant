@@ -53,7 +53,9 @@ Explanation of parameters:
   - `sample_name`: strain name
   - `fastq`: path to fastq file for RNA-Seq data
   - `fasta`: path to fasta file containing gene sequences
-  Additional columns are optional. See below example:
+  - Additional columns are optional
+
+  Example:
 
     ```console
     RNA_sample_id	DNA_sample_id	sample_name	majority_ST	level7000	ST	patient	infection_type	fastq	fasta
