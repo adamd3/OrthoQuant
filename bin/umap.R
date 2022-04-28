@@ -13,6 +13,10 @@ if (!require("RColorBrewer")){
     install.packages("RColorBrewer")
 }
 
+library(optparse)
+library(umap)
+library(ggplot2)
+library(RColorBrewer)
 
 option_list <- list(
     make_option(c("-n", "--norm_counts"), type="character", default=NULL,

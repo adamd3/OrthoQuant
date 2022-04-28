@@ -13,6 +13,10 @@ if (!require("edgeR")){
 }
 
 
+library(optparse)
+library(DESeq2)
+library(edgeR)
+
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
         help="table of read counts per gene", metavar="character"),

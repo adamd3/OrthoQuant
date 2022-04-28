@@ -9,6 +9,9 @@ if (!require("matrixStats")){
 }
 
 
+library(optparse)
+library(matrixStats)
+
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
         help="table of read counts per gene", metavar="character"),
