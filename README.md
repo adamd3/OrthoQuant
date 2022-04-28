@@ -45,7 +45,7 @@ Explanation of parameters:
 
 Other available parameters:
 - `skip_trimming`: do not trim adaptors from reads.
-- `outdir`: the output directory where the results will be saved (Default: './results').
+- `outdir`: the output directory where the results will be saved (Default: `./results`).
 
 
 ## Required input
