@@ -43,6 +43,9 @@ Explanation of parameters:
 - `norm_method`: how to perform size-factor scaling of counts (default method = `DESeq2`). Other options: `TMM` (edgeR).
 - `group`: group for plots - must be one of the columns in metadata file.
 
+Other available parameters:
+- `skip_trimming`: do not trim adaptors from reads.
+- `outdir`: the output directory where the results will be saved (Default: './results').
 
 
 ## Required input
