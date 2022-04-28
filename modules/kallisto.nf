@@ -13,8 +13,7 @@ process KALLISTO_QUANT {
 
     script:
     """
-    make_single_clone_fasta.py $clone_fasta $gpa $name
-    kallisto index -i ${name}.kidx "${name}_ss.fna"
+    kallisto index -i ${name}.kidx $clone_fasta
     kallisto quant -t $task.cpus --single -i ${name}.kidx \
         --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
     """
