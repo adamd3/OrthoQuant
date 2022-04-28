@@ -67,6 +67,7 @@ if(isFALSE(perc)){
     core_genes <- core_genome$gene
 }
 
+colnames(counts_tab)[1] <- colnames(lengths_tab)[1] <- "Gene"
 
 counts_tab <- subset(counts_tab, Gene %in% core_genes)
 lengths_tab <- subset(lengths_tab, Gene %in% core_genes)
