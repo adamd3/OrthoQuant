@@ -56,7 +56,7 @@ if (params.gpa_file) {
 // include {MERGE_METADATA} from './modules/metadata'
 // include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
-include {KALLISTO_QUANT; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
+include {KALLISTO_QUANT; KALLISTO_QUANT_TRIMMED; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
 include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS; DESEQ_NORMALISE_COUNTS} from './modules/normalisation'
 include {UMAP_SAMPLES} from './modules/plots'
 
@@ -100,21 +100,6 @@ workflow {
     //     .map { row -> row.DNA_sample_id }
     //     .set { ch_clone_ids }
 
-    /*
-     *  Trim reads
-     */
-    if (params.skip_trimming) {
-        ch_trimmed_reads = ch_raw_reads_trimgalore.collect()
-        ch_trimgalore_results_mqc = Channel.empty()
-        ch_trimgalore_fastqc_reports_mqc = Channel.empty()
-    } else {
-        TRIMGALORE (
-            ch_raw_reads_trimgalore
-        )
-        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
-        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
-        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
-    }
 
     /*
      *  Get the subset of genes to be included in the analysis
@@ -127,14 +112,33 @@ workflow {
     ch_gene_subset = SUBSET_GENES.out.gene_subset
 
     /*
-     *  Create strain-specific fasta file; index it; pseudo-align trimmed reads
+     *  Trim + pseudo-align reads
      */
-    KALLISTO_QUANT (
-        ch_gpa_file,
-        ch_clone_fasta_init,
-        ch_trimmed_reads
-    )
-    ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
+    if (params.skip_trimming) {
+
+        KALLISTO_QUANT_TRIMMED (
+            ch_gpa_file,
+            ch_clone_fasta_init,
+            ch_raw_reads_trimgalore
+        )
+        ch_kallisto_out_dirs = KALLISTO_QUANT_TRIMMED.out.kallisto_out_dirs.collect()
+
+    } else {
+
+        TRIMGALORE (
+            ch_raw_reads_trimgalore
+        )
+        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
+        ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
+        ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
+
+        KALLISTO_QUANT (
+            ch_gpa_file,
+            ch_clone_fasta_init,
+            ch_trimmed_reads
+        )
+        ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
+    }
 
     /*
      *  Merge counts

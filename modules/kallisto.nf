@@ -15,7 +15,28 @@ process KALLISTO_QUANT {
     """
     kallisto index -i ${name}.kidx $clone_fasta
     kallisto quant -t $task.cpus --single -i ${name}.kidx \
-        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $trimmed_reads
+        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
+    """
+}
+
+process KALLISTO_QUANT_TRIMMED {
+    tag "$name"
+    label 'process_high'
+    publishDir "${params.outdir}/kallisto_quant", mode: 'copy'
+
+    input:
+    path gpa
+    tuple val(name), path(clone_fasta)
+    tuple val(name), path(reads)
+
+    output:
+    path "kallisto_${name}", emit: kallisto_out_dirs
+
+    script:
+    """
+    kallisto index -i ${name}.kidx $clone_fasta
+    kallisto quant -t $task.cpus --single -i ${name}.kidx \
+        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $reads
     """
 }
 
