@@ -15,7 +15,7 @@ process KALLISTO_QUANT {
     """
     kallisto index -i ${name}.kidx $clone_fasta
     kallisto quant -t $task.cpus --single -i ${name}.kidx \
-        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
+        --fr-stranded --single -l 150 -s 20 -o kallisto_${name} $trimmed_reads
     """
 }
 
