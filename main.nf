@@ -73,6 +73,10 @@ workflow {
     /*
      *  Create channels for input files
      */
+
+     // TODO: ADD INPUT_CHECK HERE
+     // to define `meta.single_end` and create the fastq channel
+
     Channel
         .fromPath(params.meta_file)
         .splitCsv(header:true, sep:'\t')
