@@ -1,4 +1,4 @@
-#!/usr/bin/env/bin/python3
+#!/usr/bin/env/bin python3
 
 import argparse
 # import pandas as pd
