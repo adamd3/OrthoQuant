@@ -74,7 +74,7 @@ def find_core(gene_presence_absence, metadata_merged, perc, rm_split, ref_only, 
     na_counts = clone_sub.isnull().sum(axis=1)
     max_na = len(clone_sub.columns)-(round((len(clone_sub.columns)/100)*float(perc)))
     clone_sub['gene'] = gene_names
-    clone_sub = clone_sub[na_counts < max_na]
+    clone_sub = clone_sub[na_counts <= max_na]
     clone_sub.to_csv(outf, index=False, sep='\t')
 
 
