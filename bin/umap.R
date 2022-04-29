@@ -73,7 +73,7 @@ if (ncol(norm_counts)<15){
 }
 
 custom.config <- umap.defaults
-custom.config$n_neighbors <- 20
+custom.config$n_neighbors <- n_neighbours
 
 
 umap_adj <- umap(t(norm_counts), config=custom.config)
