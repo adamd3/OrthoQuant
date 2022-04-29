@@ -65,10 +65,18 @@ clone_meta_sub <- clone_meta_sub[match(colnames(norm_counts),clone_meta_sub$samp
 ##------------------------------------------------------------------------------
 ## UMAP
 ##------------------------------------------------------------------------------
-# custom.config <- umap.defaults
-# custom.config$n_neighbors <- 20
 
-umap_adj <- umap(t(norm_counts))#, config=custom.config)
+if (ncol(norm_counts)<15){
+    n_neighbours <- 3
+} else {
+    n_neighbours <- 15
+}
+
+custom.config <- umap.defaults
+custom.config$n_neighbors <- 20
+
+
+umap_adj <- umap(t(norm_counts), config=custom.config)
 umap_adj_dims <- data.frame(umap_adj$layout)
 colnames(umap_adj_dims) <- paste0("UMAP_", c(1,2))
 umap_adj_dims$sample_name <- rownames(umap_adj_dims)
