@@ -2,12 +2,12 @@
 
 
 if (!require("optparse")){
-    install.packages("optparse")
+    install.packages("optparse",repos = "http://cran.us.r-project.org")
 }
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 if (!require("DESeq2")){
-    BiocManager::install("DESeq2")
+    BiocManager::install("DESeq2",repos = "http://cran.us.r-project.org")
 }
 
 library(optparse)

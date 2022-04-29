@@ -2,10 +2,10 @@
 
 
 if (!require("optparse")){
-    install.packages("optparse")
+    install.packages("optparse",repos = "http://cran.us.r-project.org")
 }
 if (!require("matrixStats")){
-    install.packages("matrixStats")
+    install.packages("matrixStats",repos = "http://cran.us.r-project.org")
 }
 
 
