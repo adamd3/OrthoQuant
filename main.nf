@@ -222,7 +222,8 @@ def helpMessage() {
       --perc [str]                    Minimum percent of strains containing a gene for defining the core gene set. Default = 99.
       --norm_method [str]             How to perform size-factor scaling of counts for normalisation. Available options: DESeq (default), TMM.
       --skip_trimming [bool]          Do not trim adaptors from FastQ files.
-      --outdir [file]                 The output directory where the results will be saved (Default: './results').
+      --outdir [file]                 The output directory where the results will be saved (default: './results').
+      --cachedir [str]                Defines the path where Singularity images are cached [default: $params.cachedir]
       -name [str]                     Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
 
     """.stripIndent()
