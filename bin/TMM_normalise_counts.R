@@ -9,7 +9,7 @@ if (!require("DESeq2")){
     BiocManager::install("DESeq2")
 }
 if (!require("edgeR")){
-    BiocManager::install("edgeR",repos = "http://cran.us.r-project.org")
+    BiocManager::install("edgeR")
 }
 
 
