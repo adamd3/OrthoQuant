@@ -17,7 +17,7 @@ process SUBSET_GENES {
         --gene_presence_absence=$gpa_file \
         --metadata_merged=$meta_merged \
         --perc=$perc \
-        --rm_split=True --ref_only=False \
+        --ref_only=False \
         --outf=gene_set_ST.tsv
     """
 }

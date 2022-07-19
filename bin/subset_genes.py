@@ -23,8 +23,8 @@ def parse():
         nargs = '?', default = None
     )
     parser.add_argument(
-        "--rm_split", default = True,
-        help = "Remove genes which are marked as split? Default = True",
+        "--rm_split", default = False,
+        help = "Remove genes which are marked as split? Default = False",
         type = lambda x: (str(x).lower() == 'true')
     )
     parser.add_argument(
@@ -67,9 +67,9 @@ def find_core(gene_presence_absence, metadata_merged, perc, rm_split, ref_only, 
             # NB delete in reverse order to avoid throwing off the subsequent indexes.
             del gene_names[index]
         clone_sub.drop(clone_sub.index[rm_idx], inplace=True)
-    else:
-        clone_sub.replace(';', nan, regex=True, inplace=True)
-        clone_sub.replace('refound', nan, regex=True, inplace=True)
+    # else:
+    #     clone_sub.replace(';', nan, regex=True, inplace=True)
+    #     clone_sub.replace('refound', nan, regex=True, inplace=True)
     ## subset to genes present in at least `perc` strains
     na_counts = clone_sub.isnull().sum(axis=1)
     max_na = len(clone_sub.columns)-(round((len(clone_sub.columns)/100)*float(perc)))
