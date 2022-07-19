@@ -35,6 +35,28 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
         quant_dat = quant_dat[["target_id", "est_counts"]]
         quant_dat = quant_dat.rename(columns={'target_id': DNA_sample_id})
         cg = csv_data[["Gene", DNA_sample_id]]
+        ## find split genes
+        all_genes = (cg[sample_id].dropna()).tolist()
+        split_genes = [g for g in all_genes if ";" in str(g)]
+        ## for each set of split genes, get the max value + add it to counts
+        split_dict = {} ## dict to store max expression val per gene
+        for split_set in split_genes:
+            ind_genes = split_set.split(";")
+            expr_vals = quant_dat[quant_dat[sample_id].isin(ind_genes)]
+            expr_vals = expr_vals.reset_index()
+            ## take the mean expression across split genes
+            mean_est_counts = expr_vals["est_counts"].mean()
+            split_dict[split_set] = mean_est_counts
+        ## save dict of most highly expressed split genes to file
+        dict_file = os.path.join(out_dir, sample_id+'.pickle')
+        quant_split = pd.DataFrame([split_dict]).transpose()
+        quant_split.rename(columns={0:'est_counts'}, inplace=True)
+        quant_split[sample_id] = quant_split.index
+        quant_split = quant_split[[sample_id, "est_counts"]]
+        quant_split.reset_index(drop = True, inplace = True)
+        ## merge counts for split genes with the other genes
+        quant_combined = pd.concat([quant_dat, quant_split], ignore_index = True)
+        quant_merged = pd.merge(cg, quant_combined, on=sample_id)
         quant_merged = pd.merge(cg, quant_dat, on=DNA_sample_id)
         quant_merged = quant_merged[["Gene", "est_counts"]]
         quant_merged = quant_merged.rename(columns={'est_counts': sample_name})
