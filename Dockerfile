@@ -7,6 +7,8 @@ LABEL maintainer="Adam Dinan <adam1989ie@gmail.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+ENV PYTHON_VERSION=3.8.5
+
 ADD https://raw.githubusercontent.com/adamd3/StrainSeq/main/requirements.txt .
 
 COPY requirements.txt /tmp

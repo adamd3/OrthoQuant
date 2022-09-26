@@ -38,8 +38,8 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
         ## find split genes
         all_genes = (cg[DNA_sample_id].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
-        dict_file = os.path.join(dict_dir, DNA_sample_id+'.pickle')
-        max_expr = pickle.load(open(dict_file, "rb")) ## max expressed of split genes
+        # dict_file = os.path.join(dict_dir, DNA_sample_id+'.pickle')
+        # max_expr = pickle.load(open(dict_file, "rb")) ## max expressed of split genes
         split_dict = {}
         for split_set in split_genes:
             ind_genes = split_set.split(";")
