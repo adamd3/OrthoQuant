@@ -47,8 +47,8 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
             ## take the mean expression across split genes
             mean_est_counts = expr_vals["est_counts"].mean()
             split_dict[split_set] = mean_est_counts
-        ## save dict of most highly expressed split genes to file
-        dict_file = os.path.join(out_dir, DNA_sample_id+'.pickle')
+        # ## save dict of most highly expressed split genes to file
+        # dict_file = os.path.join(out_dir, DNA_sample_id+'.pickle')
         quant_split = pd.DataFrame([split_dict]).transpose()
         quant_split.rename(columns={0:'est_counts'}, inplace=True)
         quant_split[DNA_sample_id] = quant_split.index
