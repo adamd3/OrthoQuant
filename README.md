@@ -1,4 +1,4 @@
-# StrainSeq
+# ![StrainSeq](docs/images/StrainSeq_logo_light.png#gh-light-mode-only) ![StrainSeq](docs/images/StrainSeq_logo_dark.png#gh-dark-mode-only)
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
