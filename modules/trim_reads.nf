@@ -13,7 +13,7 @@ process TRIMGALORE {
     tuple val(name), path(reads)
 
     output:
-    path '*.gz', emit: trimmed_reads
+    path '*trimmed.fq.gz', emit: trimmed_reads
     path '*.txt', emit: trimgalore_results_mqc
     path '*.{zip,html}', emit: trimgalore_fastqc_reports_mqc
 
@@ -32,6 +32,6 @@ process TRIMGALORE {
     // Add symlinks to original fastqs for consistent naming in MultiQC
     """
     [ ! -f  ${name}.gz ] && ln -s $reads ${name}.gz
-    trim_galore --cores $cores --fastqc --gzip ${name}.gz
+    trim_galore --cores $cores --fastqc --gzip ${name}.gz --basename ${name}
     """
 }
