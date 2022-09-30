@@ -13,7 +13,7 @@ process TRIMGALORE {
     tuple val(name), path(reads)
 
     output:
-    path '*.fq.gz', emit: trimmed_reads
+    path '*.gz', emit: trimmed_reads
     path '*.txt', emit: trimgalore_results_mqc
     path '*.{zip,html}', emit: trimgalore_fastqc_reports_mqc
 
