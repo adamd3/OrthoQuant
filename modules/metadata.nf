@@ -11,6 +11,6 @@ process MERGE_METADATA {
 
     script:
     """
-    merge_metadata.py $metadata $id_mappings ${params.data_dir} metadata_merged.tsv
+    merge_metadata.py $metadata $id_mappings metadata_merged.tsv
     """
 }

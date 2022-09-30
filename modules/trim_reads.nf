@@ -31,7 +31,7 @@ process TRIMGALORE {
 
     // Add symlinks to original fastqs for consistent naming in MultiQC
     """
-    [ ! -f  ${name}.fastq.gz ] && ln -s $reads ${name}.fastq.gz
-    trim_galore --cores $cores --fastqc --gzip ${name}.fastq.gz
+    [ ! -f  ${name}.gz ] && ln -s $reads ${name}.gz
+    trim_galore --cores $cores --fastqc --gzip ${name}.gz
     """
 }
