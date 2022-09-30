@@ -1,5 +1,5 @@
-<!-- # ![OrthoQuant](docs/images/OrthoQuant_logo_light.png#gh-light-mode-only) ![OrthoQuant](docs/images/OrthoQuant_logo_dark.png#gh-dark-mode-only) -->
-![OrthoQuant](docs/images/OrthoQuant_logo.png)
+![OrthoQuant](docs/images/OrthoQuant_light.png#gh-light-mode-only) ![OrthoQuant](docs/images/OrthoQuant_dark.png#gh-dark-mode-only)
+
 ![OrthoQuant](https://github.com/adamd3/OrthoQuant/actions/workflows/ci.yml/badge.svg)
 
 
