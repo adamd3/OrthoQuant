@@ -1,4 +1,6 @@
-# ![StrainSeq](docs/images/StrainSeq_logo_light.png#gh-light-mode-only) ![StrainSeq](docs/images/StrainSeq_logo_dark.png#gh-dark-mode-only)
+<!-- # ![OrthoQuant](docs/images/OrthoQuant_logo_light.png#gh-light-mode-only) ![OrthoQuant](docs/images/OrthoQuant_logo_dark.png#gh-dark-mode-only) -->
+![OrthoQuant](https://github.com/adamd3/OrthoQuant/actions/workflows/ci.yml/badge.svg)
+
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
@@ -7,7 +9,7 @@
 
 ## Introduction
 
-**StrainSeq** is a Nextflow pipeline for performing strain-specific bacterial RNA-Seq analysis without a reference genome.
+**OrthoQuant** is a Nextflow pipeline for performing strain-specific bacterial RNA-Seq analysis without a reference genome.
 
 ## Pipeline summary
 
@@ -27,7 +29,7 @@ You will need to install [`Nextflow`](https://www.nextflow.io/) (version 21.10.3
 
 You can run the pipeline as follows:
 
-    nextflow run /path/to/StrainSeq \
+    nextflow run /path/to/OrthoQuant \
         --meta_file /path/to/metadata.txt \
         --gpa_file /path/to/gene_presence_absence.csv \
         --perc 99 --norm_method DESeq --group majority_ST -profile conda -resume

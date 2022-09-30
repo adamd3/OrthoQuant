@@ -1,5 +1,5 @@
 ############################################################
-## Dockerfile for StrainSeq
+## Dockerfile for OrthoQuant
 ############################################################
 
 FROM ubuntu:22.04
@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PYTHON_VERSION=3.8.5
 
-ADD https://raw.githubusercontent.com/adamd3/StrainSeq/main/requirements.txt .
+ADD https://raw.githubusercontent.com/adamd3/OrthoQuant/main/requirements.txt .
 
 COPY requirements.txt /tmp
 WORKDIR /tmp
