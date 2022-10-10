@@ -1,16 +1,15 @@
-process MERGE_METADATA {
+process CHECK_META_FILE {
     tag "$metadata"
     publishDir "${params.outdir}/pipeline_info", mode: 'copy'
 
     input:
     path metadata
-    path id_mappings
 
     output:
-    path 'metadata_merged.tsv', emit: meta_merged
+    path 'metadata_final.tsv', emit: sample_metadata
 
     script:
     """
-    merge_metadata.py $metadata $id_mappings metadata_merged.tsv
+    check_metadata.py $metadata metadata_final.tsv
     """
 }

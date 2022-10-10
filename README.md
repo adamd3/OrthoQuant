@@ -56,20 +56,18 @@ Other available parameters:
 - __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
   - `dna_sample_id`: gene sequence sample identifier (must match the column name in the Panaroo gene presence/absence file)
   - `sample_name`: strain name
-  - `fastq`: path to fastq file for RNA-Seq data
+  - `fastq1`: path to fastq file for RNA-Seq data
+  - `fastq2`: (optional) path to 2nd fastq file for paired-end RNA-Seq data - leave blank for single-end data
   - `fasta`: path to fasta file containing gene sequences
   - Additional columns are optional
 
   Example:
 
     ```console
-    rna_sample_id	dna_sample_id	sample_name	majority_ST	level7000	ST	patient	infection_type	fastq	fasta
-    SRX5123744	SRR8737283	ZG302367	274	4	274	7ZG302367	ear infection	/path/to/fastq/SRX5123744_T1.fastq.gz	/path/to/fasta/SRR8737283.fna
-    SRX5123743	SRR8737284	ZG302359	244	5	244	7ZG302359	pyrexia	/path/to/fastq/SRX5123743_T1.fastq.gz	/path/to/fasta/SRR8737284.fna
-    SRX5123714	SRR8737286	PSAE1649	313	2	313	PSAE1649	wound infection	/path/to/fastq/SRX5123714_T1.fastq.gz	/path/to/fasta/SRR8737286.fna
-    SRX5123695	SRR8737287	MHH17441	235	6	235	4MHH17441	urinary tract	/path/to/fastq/SRX5123695_T1.fastq.gz	/path/to/fasta/SRR8737287.fna
-    SRX5123726	SRR8737288	PSAE1975	395	7	395	1PSAE1975	wound infection	/path/to/fastq/SRX5123726_T1.fastq.gz	/path/to/fasta/SRR8737288.fna
-    SRX5123719	SRR8737290	PSAE1745	111	3	111	3PSAE1745	respiratory tract	/path/to/fastq/SRX5123719_T1.fastq.gz	/path/to/fasta/SRR8737290.fna
+    rna_sample_id	dna_sample_id	sample_name	majority_ST	level7000	acsA	aroE	guaA	mutL	nuoD	ppsA	trpE	patient	collection_date	cohort	infection_type	fastq1	fastq2	fasta	
+    SRX5123742	SRR8737281	ZG301975	313	2	47	8	7	6	8	11	40	ZG301975		hzi_amr		https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRX5123742_T1_sub.fq.gz		https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRR8737281.fna	
+    SRX5123741	SRR8737282	ZG205864	111	3	17	5	5	4	4	4	3	ZG205864		hzi_amr		https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRX5123741_T1_sub.fq.gz		https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRR8737282.fna	
+    SRX5123744	SRR8737283	ZG302367	274	4	23	5	11	7	1	12	7	ZG302367		hzi_amr	ear infection	https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRX5123744_T1_sub.fq.gz		https://raw.githubusercontent.com/adamd3/OrthoQuant/main/test_data/SRR8737283.fna	
     ```
 
 - __Gene presence-absence file__: CSV-format output produced by [`Panaroo`](https://gtonkinhill.github.io/panaroo/).

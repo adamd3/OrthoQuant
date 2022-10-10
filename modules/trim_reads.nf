@@ -1,5 +1,5 @@
 process TRIMGALORE {
-    tag "$name"
+    tag "$meta.sample_id"
     label 'process_high'
     publishDir "${params.outdir}/trim_galore", mode: 'copy',
         saveAs: { filename ->
@@ -9,13 +9,24 @@ process TRIMGALORE {
                       else params.save_trimmed ? filename : null
                 }
 
+    // input:
+    // tuple val(name), path(reads)
+
+    // output:
+    // path '*trimmed.fq.gz', emit: trimmed_reads
+    // path '*.txt', emit: trimgalore_results_mqc
+    // path '*.{zip,html}', emit: trimgalore_fastqc_reports_mqc
+
+
     input:
-    tuple val(name), path(reads)
+    tuple val(meta), path(reads)
 
     output:
-    path '*trimmed.fq.gz', emit: trimmed_reads
-    path '*.txt', emit: trimgalore_results_mqc
-    path '*.{zip,html}', emit: trimgalore_fastqc_reports_mqc
+    tuple val(meta), path("*{trimmed,val}*.fq.gz"), emit: trimmed_reads
+    tuple val(meta), path("*.txt")                , emit: trimgalore_results_mqc
+    tuple val(meta), path("*.{zip,html}")         , emit: trimgalore_fastqc_reports_mqc
+    tuple val(meta), path("*unpaired*.fq.gz")     , emit: unpaired, optional: true
+
 
     script:
     // Calculate number of --cores for TrimGalore based on value of task.cpus
@@ -29,9 +40,20 @@ process TRIMGALORE {
         if (cores > 4) cores = 4
     }
 
-    // Add symlinks to original fastqs for consistent naming in MultiQC
-    """
-    [ ! -f  ${name}.gz ] && ln -s $reads ${name}.gz
-    trim_galore --cores $cores --fastqc --gzip ${name}.gz --basename ${name}
-    """
+
+    def name = task.ext.prefix ?: "${meta.sample_id}"
+
+    if (meta.paired_end) {
+        """
+        [ ! -f  ${name}_1.fastq.gz ] && ln -s ${reads[0]} ${name}_1.fastq.gz
+        [ ! -f  ${name}_2.fastq.gz ] && ln -s ${reads[1]} ${name}_2.fastq.gz
+        trim_galore --cores $cores --fastqc --paired --gzip \\
+            ${name}_1.fastq.gz ${name}_2.fastq.gz
+        """
+    } else {
+        """
+        [ ! -f  ${name}.fastq.gz ] && ln -s $reads ${name}.fastq.gz
+        trim_galore --cores $cores --fastqc --gzip ${name}.fastq.gz
+        """
+    }
 }

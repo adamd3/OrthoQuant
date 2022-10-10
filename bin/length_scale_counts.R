@@ -13,7 +13,8 @@ option_list <- list(
     make_option(c("-i", "--impute"), type="character", default=NULL,
         help="return 0-imputed counts", metavar="character"),
     make_option(c("-p", "--perc"), type="character", default=NULL,
-        help="was filtering based on percentage presence of gene?", metavar="character"),
+        help="was filtering based on percentage presence of gene?", 
+        metavar="character"),
     make_option(c("-o", "--outf"), type="character", default=NULL,
         help="output file for results", metavar="character")
 )

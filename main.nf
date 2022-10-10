@@ -30,7 +30,7 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 */
 
 if (params.meta_file) {
-    ch_metadata = file(params.meta_file, checkIfExists: true)
+    ch_samples = file(params.meta_file, checkIfExists: true)
 } else { exit 1, 'Metadata file not specified!' }
 
 // if (params.multifasta_file) {
@@ -53,7 +53,7 @@ if (params.gpa_file) {
     Modules
 ================================================================================
 */
-// include {MERGE_METADATA} from './modules/metadata'
+include {CHECK_META_FILE} from './modules/metadata'
 // include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
 include {KALLISTO_QUANT; KALLISTO_QUANT_TRIMMED; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
@@ -61,6 +61,34 @@ include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS; DESEQ_NORMALIS
 include {UMAP_SAMPLES} from './modules/plots'
 
 
+
+/*
+================================================================================
+    Functions
+================================================================================
+*/
+// Function to get list of [ meta, [ fastq_1, fastq2 ] ]
+def create_fastq_channel(LinkedHashMap row) {
+    // create sample metadata
+    def meta = [:]
+    meta.sample_id    = row.dna_sample_id
+    meta.paired_end   = row.paired.toBoolean()
+
+    // add path(s) of the fastq file(s) to the metadata
+    def seq_meta = []
+    if (!file(row.fastq1).exists()) {
+        exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${row.fastq1}"
+    }
+    if (meta.paired_end) {
+        if (!file(row.fastq2).exists()) {
+            exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${row.fastq2}"
+        }
+        seq_meta = [ meta, [ file(row.fastq1), file(row.fastq2), file(row.fasta) ] ]
+    } else {
+        seq_meta = [ meta, [ file(row.fastq1), file(row.fasta) ] ]
+    }
+    return seq_meta
+}
 
 
 /*
@@ -74,31 +102,29 @@ workflow {
      *  Create channels for input files
      */
 
-     // TODO: ADD INPUT_CHECK HERE
-     // to define `meta.single_end` and create the fastq channel
+    CHECK_META_FILE (
+        ch_samples
+    )
+    ch_metadata = CHECK_META_FILE.out.sample_metadata
 
-    Channel
-        .fromPath(params.meta_file)
-        .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.dna_sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+
+    // Channel
+    //     .fromPath(params.meta_file)
+    //     .splitCsv(header:true, sep:'\t')
+    //     // .map { row -> [ row.dna_sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
+    //     .map { create_fastq_channel(it) }
+    //     .set { ch_raw_reads_trimgalore }
+
+    // Channel
+    //     .fromPath(params.meta_file)
+    //     .splitCsv(header:true, sep:'\t')
+    //     .map { row -> [ row.dna_sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
+    //     .set { ch_clone_fasta_init }
+
+    ch_metadata
+        .splitCsv(header: true, sep:'\t')
+        .map { create_fastq_channel(it) }
         .set { ch_raw_reads_trimgalore }
-
-    Channel
-        .fromPath(params.meta_file)
-        .splitCsv(header:true, sep:'\t')
-        .map { row -> [ row.dna_sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
-        .set { ch_clone_fasta_init }
-
-    // ch_st_file
-    //     .fromPath(params.st_file)
-    //     .splitText()
-    //     .view()
-
-    // extract the sample IDs only:
-    // ch_meta_merged
-    //     .splitCsv(header: true, sep:'\t')
-    //     .map { row -> row.dna_sample_id }
-    //     .set { ch_clone_ids }
 
 
     /*
@@ -116,25 +142,26 @@ workflow {
      */
     if (params.skip_trimming) {
 
-        KALLISTO_QUANT_TRIMMED (
+        KALLISTO_QUANT (
             ch_gpa_file,
-            ch_clone_fasta_init,
+            // ch_clone_fasta_init,
             ch_raw_reads_trimgalore
         )
-        ch_kallisto_out_dirs = KALLISTO_QUANT_TRIMMED.out.kallisto_out_dirs.collect()
+        ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
 
     } else {
 
         TRIMGALORE (
             ch_raw_reads_trimgalore
         )
-        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
+        // ch_trimmed_reads = TRIMGALORE.out.trimmed_reads.collect()
+        ch_trimmed_reads = TRIMGALORE.out.trimmed_reads
         ch_trimgalore_results_mqc = TRIMGALORE.out.trimgalore_results_mqc
         ch_trimgalore_fastqc_reports_mqc = TRIMGALORE.out.trimgalore_fastqc_reports_mqc
 
         KALLISTO_QUANT (
             ch_gpa_file,
-            ch_clone_fasta_init,
+            // ch_clone_fasta_init,
             ch_trimmed_reads
         )
         ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
