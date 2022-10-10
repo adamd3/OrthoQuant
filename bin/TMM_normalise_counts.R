@@ -1,18 +1,5 @@
 #!/usr/bin/env Rscript
 
-if (!require("optparse")){
-    install.packages("optparse",repos = "http://cran.us.r-project.org")
-}
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager",repos = "http://cran.us.r-project.org")
-if (!require("DESeq2")){
-    BiocManager::install("DESeq2")
-}
-if (!require("edgeR")){
-    BiocManager::install("edgeR")
-}
-
-
 library(optparse)
 library(DESeq2)
 library(edgeR)
