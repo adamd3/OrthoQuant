@@ -29,7 +29,7 @@ def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
         }
     )
     merged_meta = clone_metadat.merge(id_map_dat, on='sample_name')
-    # merged_meta = merged_meta.rename(columns={'sample_id': 'DNA_sample_id'})
+    # merged_meta = merged_meta.rename(columns={'sample_id': 'dna_sample_id'})
     ## move RNA column to front of df
     merged_meta = merged_meta[['RNA_sample_id'] +
         [ col for col in merged_meta.columns if col != 'RNA_sample_id' ]
@@ -37,7 +37,7 @@ def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
     # merged_meta['fastq'] = [os.path.join(data_dir, 'fastq', s +
     #     '_T1.fastq.gz') for s in merged_meta['RNA_sample_id'].tolist()]
     # merged_meta['fasta'] = [os.path.join(data_dir, 'extract_fasta', s +
-    #     '.fna') for s in merged_meta['DNA_sample_id'].tolist()]
+    #     '.fna') for s in merged_meta['dna_sample_id'].tolist()]
     ## remove any row where the FastQ or FASTA data is missing
     rm_idx = []
     for index, row in merged_meta.iterrows():

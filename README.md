@@ -54,7 +54,7 @@ Other available parameters:
 ## Required input
 
 - __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
-  - `DNA_sample_id`: gene sequence sample identifier (must match the column name in the Panaroo gene presence/absence file)
+  - `dna_sample_id`: gene sequence sample identifier (must match the column name in the Panaroo gene presence/absence file)
   - `sample_name`: strain name
   - `fastq`: path to fastq file for RNA-Seq data
   - `fasta`: path to fasta file containing gene sequences
@@ -63,7 +63,7 @@ Other available parameters:
   Example:
 
     ```console
-    RNA_sample_id	DNA_sample_id	sample_name	majority_ST	level7000	ST	patient	infection_type	fastq	fasta
+    RNA_sample_id	dna_sample_id	sample_name	majority_ST	level7000	ST	patient	infection_type	fastq	fasta
     SRX5123744	SRR8737283	ZG302367	274	4	274	7ZG302367	ear infection	/path/to/fastq/SRX5123744_T1.fastq.gz	/path/to/fasta/SRR8737283.fna
     SRX5123743	SRR8737284	ZG302359	244	5	244	7ZG302359	pyrexia	/path/to/fastq/SRX5123743_T1.fastq.gz	/path/to/fasta/SRR8737284.fna
     SRX5123714	SRR8737286	PSAE1649	313	2	313	PSAE1649	wound infection	/path/to/fastq/SRX5123714_T1.fastq.gz	/path/to/fasta/SRR8737286.fna
