@@ -56,7 +56,7 @@ if (params.gpa_file) {
 include {CHECK_META_FILE} from './modules/metadata'
 // include {MAKE_CLONE_FASTA} from './modules/make_clone_fasta'
 include {TRIMGALORE} from './modules/trim_reads'
-include {KALLISTO_QUANT; KALLISTO_QUANT_TRIMMED; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
+include {KALLISTO_QUANT; MERGE_COUNTS_AND_LENS} from './modules/kallisto'
 include {SUBSET_GENES; LENGTH_SCALE_COUNTS; TMM_NORMALISE_COUNTS; DESEQ_NORMALISE_COUNTS} from './modules/normalisation'
 include {UMAP_SAMPLES} from './modules/plots'
 
