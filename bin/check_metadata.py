@@ -17,8 +17,8 @@ def parse():
 
 def check_meta(sample_file, outf):
     sample_dat = pd.read_csv(sample_file, sep = "\t")
-    # if(len(sample_dat.fastq2.value_counts()) > 0):
-    if(sample_dat['fastq2'].replace(r'^\s*$', np.nan, regex=True).isna().all()):
+    if(len(sample_dat.fastq2.value_counts()) > 0):
+    # if(sample_dat['fastq2'].replace(r'^\s*$', np.nan, regex=True).isna().all()):
         sample_dat['paired'] = "1"
     else:
         sample_dat['paired'] = "0"
