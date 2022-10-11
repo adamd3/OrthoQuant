@@ -40,6 +40,7 @@ jobs:
           # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
+          chmod +x nextflow
           sudo mv nextflow /usr/local/bin/
 
       - name: Run pipeline with test data
