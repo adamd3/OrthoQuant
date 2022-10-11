@@ -83,9 +83,9 @@ def create_fastq_channel(LinkedHashMap row) {
         if (!file(row.fastq2).exists()) {
             exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${row.fastq2}"
         }
-        seq_meta = [ meta, [ file(row.fastq1), file(row.fastq2), file(row.fasta) ] ]
+        seq_meta = [ meta, [ file(row.fastq1), file(row.fastq2) ], file(row.fasta) ]
     } else {
-        seq_meta = [ meta, [ file(row.fastq1), file(row.fasta) ] ]
+        seq_meta = [ meta, file(row.fastq1), file(row.fasta) ]
     }
     return seq_meta
 }

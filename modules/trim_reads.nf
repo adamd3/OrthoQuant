@@ -19,13 +19,13 @@ process TRIMGALORE {
 
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(reads), path(fasta)
 
     output:
-    tuple val(meta), path("*{trimmed,val}*.fq.gz"), emit: trimmed_reads
-    tuple val(meta), path("*.txt")                , emit: trimgalore_results_mqc
-    tuple val(meta), path("*.{zip,html}")         , emit: trimgalore_fastqc_reports_mqc
-    tuple val(meta), path("*unpaired*.fq.gz")     , emit: unpaired, optional: true
+    tuple val(meta), path("*{trimmed,val}*.fq.gz"), path(fasta) , emit: trimmed_reads
+    tuple val(meta), path("*.txt")                              , emit: trimgalore_results_mqc
+    tuple val(meta), path("*.{zip,html}")                       , emit: trimgalore_fastqc_reports_mqc
+    tuple val(meta), path("*unpaired*.fq.gz")                   , emit: unpaired, optional: true
 
 
     script:
