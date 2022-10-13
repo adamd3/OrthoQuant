@@ -17,10 +17,10 @@ def parse():
 
 def check_meta(sample_file, outf):
     sample_dat = pd.read_csv(sample_file, sep = "\t")
+    # remove empty rows
     sample_dat.replace("", float("NaN"), inplace=True)
     sample_dat.dropna(subset = ["dna_sample_id"], inplace=True)
     if(len(sample_dat.fastq2.value_counts()) > 0):
-    # if(sample_dat['fastq2'].replace(r'^\s*$', np.nan, regex=True).isna().all()):
         sample_dat['paired'] = "1"
     else:
         sample_dat['paired'] = "0"

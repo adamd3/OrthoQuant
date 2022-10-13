@@ -3,6 +3,7 @@
 library(optparse)
 library(DESeq2)
 library(edgeR)
+library(tibble)
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
@@ -91,15 +92,18 @@ y <- calcNormFactors(y)
 # rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log))
 rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log transform the RPKM vals
 
+## convert rownames to column
+res_df <- tibble::rownames_to_column(res_df, "feature_id")
+rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
 
 write.table(
     res_df, file.path(outdir,"norm_counts.tsv"),
-    col.names = TRUE, row.names = TRUE,
+    col.names = TRUE, row.names = FALSE,
     sep = "\t", quote = FALSE
 )
 
 write.table(
     rpkm_df, file.path(outdir,"rpkm_counts.tsv"),
-    col.names = TRUE, row.names = TRUE,
+    col.names = TRUE, row.names = FALSE,
     sep = "\t", quote = FALSE
 )

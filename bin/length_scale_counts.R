@@ -2,6 +2,7 @@
 
 library(optparse)
 library(matrixStats)
+library(tibble)
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
@@ -75,7 +76,10 @@ if(isTRUE(impute)){
     counts_tab_scaled[is.na(counts_tab_scaled)] <- 0
 }
 
+## convert rownames to column
+counts_tab_scaled <- tibble::rownames_to_column(counts_tab_scaled, "feature_id")
+
 write.table(
-    counts_tab_scaled, outf, col.names = TRUE, row.names = TRUE,
+    counts_tab_scaled, outf, col.names = TRUE, row.names = FALSE,
     sep = "\t", quote = FALSE
 )
