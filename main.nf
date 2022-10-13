@@ -144,8 +144,8 @@ workflow {
 
         KALLISTO_QUANT (
             ch_gpa_file,
-            // ch_clone_fasta_init,
-            ch_raw_reads_trimgalore
+            ch_raw_reads_trimgalore,
+            params.strandedness
         )
         ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
 
@@ -161,8 +161,8 @@ workflow {
 
         KALLISTO_QUANT (
             ch_gpa_file,
-            // ch_clone_fasta_init,
-            ch_trimmed_reads
+            ch_trimmed_reads,
+            params.strandedness
         )
         ch_kallisto_out_dirs = KALLISTO_QUANT.out.kallisto_out_dirs.collect()
     }
@@ -246,6 +246,9 @@ def helpMessage() {
                                       Available: conda, docker
 
     Other options:
+      --strandedness [str]            Strandedness of the reads. 0 = unstranded, 1 = forward-stranded, 2 = reverse-stranded. Default = 2.
+      --fragment_len [str]            Estimated average fragment length for kallisto transcript quantification (only required for single-end reads). Default = 150.
+      --fragment_sd [str]             Estimated standard deviation of fragment length for kallisto transcript quantification (only required for single-end reads). Default = 20.
       --perc [str]                    Minimum percent of strains containing a gene for defining the core gene set. Default = 99.
       --norm_method [str]             How to perform size-factor scaling of counts for normalisation. Available options: DESeq (default), TMM.
       --skip_trimming [bool]          Do not trim adaptors from FastQ files.

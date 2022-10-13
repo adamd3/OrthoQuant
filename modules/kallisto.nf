@@ -5,14 +5,22 @@ process KALLISTO_QUANT {
 
     input:
     path gpa
-    // tuple val(name), path(clone_fasta)
     tuple val(meta), path(reads), path(fasta)
+    val strandedness
 
     output:
     path "kallisto_${meta.sample_id}", emit: kallisto_out_dirs
 
     script:
     def name = task.ext.prefix ?: "${meta.sample_id}"
+
+    if (strandedness == 0){
+        strand_arg = ""
+    } else if (strandedness == 1){
+        strand_arg = "--fr-stranded"
+    } else if (strandedness==2){
+        strand_arg = "--rf-stranded"
+    }
 
     if (meta.paired_end) {
         // if trimming has not been performed, must symlink to match expected file names
@@ -22,14 +30,15 @@ process KALLISTO_QUANT {
         [ ! -f  ${name}_2_val_2.fq.gz ] && ln -s ${reads[1]} ${name}_2_val_2.fq.gz
         kallisto index -i ${name}.kidx $fasta
         kallisto quant -t $task.cpus -i ${name}.kidx \
-            --fr-stranded -o kallisto_${name} ${name}_1_val_1.fq.gz ${name}_2_val_2.fq.gz
+            ${strand_arg} -o kallisto_${name} ${name}_1_val_1.fq.gz ${name}_2_val_2.fq.gz
         """
     } else {
         """
         [ ! -f  ${name}_trimmed.fq.gz ] && ln -s $reads ${name}_trimmed.fq.gz
         kallisto index -i ${name}.kidx $fasta
         kallisto quant -t $task.cpus -i ${name}.kidx \
-            --fr-stranded --single -l 150 -s 20 -o kallisto_${name} ${name}_trimmed.fq.gz
+            ${strand_arg} --single -l ${params.fragment_len} -s ${params.fragment_sd} \
+            -o kallisto_${name} ${name}_trimmed.fq.gz
         """
     }
 }

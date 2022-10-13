@@ -33,7 +33,8 @@ You can run the pipeline as follows:
     nextflow run /path/to/OrthoQuant \
         --meta_file /path/to/metadata.txt \
         --gpa_file /path/to/gene_presence_absence.csv \
-        --perc 99 --norm_method DESeq --group majority_ST -profile conda -resume
+        --perc 99 --norm_method DESeq --group majority_ST \
+        -profile conda -resume
 
 You can run with [`Docker`](https://www.docker.com/) or [`Singularity`](https://sylabs.io/guides/3.5/user-guide/introduction.html) by specifying ` -profile docker` or ` -profile singularity`, respectively.
 
@@ -43,10 +44,11 @@ Explanation of parameters:
 - `meta_file`: metadata file (see below).
 - `gpa_file`: gene presence/absence file from Panaroo (see below).
 - `perc`: defines the minimum percent of strains containing a gene for inclusion in the analysis (for example, --perc 99 means that a gene must be present in 99% of strains for it to be included).
+- `strandedness`: Strandedness of the reads. 0 = unstranded, 1 = forward-stranded, 2 = reverse-stranded. Default = 2.
+- `fragment_len`:  Estimated average fragment length for kallisto transcript quantification (only required for single-end reads). Default = 150.
+- `fragment_sd`: Estimated standard deviation of fragment length for kallisto transcript quantification (only required for single-end reads). Default = 20.
 - `norm_method`: how to perform size-factor scaling of counts (default method = `DESeq2`). Other options: `TMM` (edgeR).
 - `group`: group for plots - must be one of the columns in metadata file.
-
-Other available parameters:
 - `skip_trimming`: do not trim adaptors from reads.
 - `outdir`: the output directory where the results will be saved (Default: `./results`).
 
