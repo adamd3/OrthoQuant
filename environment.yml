@@ -23,6 +23,7 @@ dependencies:
   - conda-forge::r-pheatmap>=1.0
   - conda-forge::r-matrixstats>=0.6
   - conda-forge::r-umap>=0.2
+  - conda-forge::r-tibble>=3.1
 
   ## bioconda packages
   - bioconda::fastqc>=0.11
