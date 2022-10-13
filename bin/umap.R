@@ -35,7 +35,7 @@ colpal_large <- c(colpal_large, colpal_large)
 ##------------------------------------------------------------------------------
 ## Read and process data
 ##------------------------------------------------------------------------------
-norm_counts <- read.table(counts_f)
+norm_counts <- as.data.frame(read_tsv(counts_f))
 rownames(norm_counts) <- norm_counts[["feature_id"]]
 norm_counts[["feature_id"]] <- NULL
 norm_counts <- log2(norm_counts+1)
