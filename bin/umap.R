@@ -4,7 +4,6 @@ library(optparse)
 library(umap)
 library(ggplot2)
 library(RColorBrewer)
-library(readr)
 
 option_list <- list(
     make_option(c("-n", "--norm_counts"), type="character", default=NULL,
