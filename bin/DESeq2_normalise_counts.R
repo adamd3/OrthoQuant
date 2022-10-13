@@ -98,8 +98,8 @@ if(isTRUE(log)){
 }
 
 ## convert rownames to column
-res_df <- tibble::rownames_to_column(res_df, "feature_id")
-rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
+res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
+rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
 
 
 write.table(

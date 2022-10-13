@@ -93,8 +93,8 @@ y <- calcNormFactors(y)
 rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log transform the RPKM vals
 
 ## convert rownames to column
-res_df <- tibble::rownames_to_column(res_df, "feature_id")
-rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
+res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
+rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
 
 write.table(
     res_df, file.path(outdir,"norm_counts.tsv"),

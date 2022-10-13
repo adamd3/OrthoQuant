@@ -77,7 +77,7 @@ if(isTRUE(impute)){
 }
 
 ## convert rownames to column
-counts_tab_scaled <- tibble::rownames_to_column(counts_tab_scaled, "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(counts_tab_scaled), "feature_id")
 
 write.table(
     counts_tab_scaled, outf, col.names = TRUE, row.names = FALSE,
