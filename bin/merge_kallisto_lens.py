@@ -29,11 +29,13 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
     quant_dfs = []
     for index, row in metadata.iterrows():
         sample_name = row['sample_name']
+        dna_sample_id = row['dna_sample_id']
         quant_file = os.path.join('kallisto_'+sample_name, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "eff_length"]]
         quant_dat = quant_dat.rename(columns={'target_id': sample_name})
-        cg = csv_data[["Gene", sample_name]]
+        cg = csv_data[["Gene", dna_sample_id]]
+        cg.columns.values[1] = sample_name
         ## find split genes
         all_genes = (cg[sample_name].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
