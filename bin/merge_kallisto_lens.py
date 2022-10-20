@@ -25,35 +25,34 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     colnames = csv_data.columns.values.tolist()
     gene_names = csv_data.iloc[:,0].tolist()
-    metadata = metadata[metadata['dna_sample_id'].isin(colnames)]
+    metadata = metadata[metadata['sample_name'].isin(colnames)]
     quant_dfs = []
     for index, row in metadata.iterrows():
-        dna_sample_id = row['dna_sample_id']
         sample_name = row['sample_name']
-        quant_file = os.path.join('kallisto_'+dna_sample_id, 'abundance.tsv')
+        quant_file = os.path.join('kallisto_'+sample_name, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "eff_length"]]
-        quant_dat = quant_dat.rename(columns={'target_id': dna_sample_id})
-        cg = csv_data[["Gene", dna_sample_id]]
+        quant_dat = quant_dat.rename(columns={'target_id': sample_name})
+        cg = csv_data[["Gene", sample_name]]
         ## find split genes
-        all_genes = (cg[dna_sample_id].dropna()).tolist()
+        all_genes = (cg[sample_name].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
-        # dict_file = os.path.join(dict_dir, dna_sample_id+'.pickle')
+        # dict_file = os.path.join(dict_dir, sample_name+'.pickle')
         # max_expr = pickle.load(open(dict_file, "rb")) ## max expressed of split genes
         split_dict = {}
         for split_set in split_genes:
             ind_genes = split_set.split(";")
-            expr_vals = quant_dat[quant_dat[dna_sample_id].isin(ind_genes)]
+            expr_vals = quant_dat[quant_dat[sample_name].isin(ind_genes)]
             ## take the mean length across split genes
             mean_len = expr_vals["eff_length"].mean()
             split_dict[split_set] = mean_len
         quant_split = pd.DataFrame([split_dict]).transpose()
         quant_split.rename(columns={0:'eff_length'}, inplace=True)
-        quant_split[dna_sample_id] = quant_split.index
-        quant_split = quant_split[[dna_sample_id, "eff_length"]]
+        quant_split[sample_name] = quant_split.index
+        quant_split = quant_split[[sample_name, "eff_length"]]
         quant_split.reset_index(drop = True, inplace = True)
         quant_combined = pd.concat([quant_dat, quant_split], ignore_index = True)
-        quant_merged = pd.merge(cg, quant_combined, on=dna_sample_id)
+        quant_merged = pd.merge(cg, quant_combined, on=sample_name)
         quant_merged = quant_merged[["Gene", "eff_length"]]
         quant_merged = quant_merged.rename(columns={'eff_length': sample_name})
         quant_dfs.append(quant_merged)
