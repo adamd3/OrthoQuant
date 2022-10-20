@@ -25,7 +25,7 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     colnames = csv_data.columns.values.tolist()
     gene_names = csv_data.iloc[:,0].tolist()
-    metadata = metadata[metadata['sample_name'].isin(colnames)]
+    metadata = metadata[metadata['dna_sample_id'].isin(colnames)]
     quant_dfs = []
     for index, row in metadata.iterrows():
         sample_name = row['sample_name']
