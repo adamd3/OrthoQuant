@@ -20,7 +20,7 @@ def parse():
     merge_meta(**vars(args))
 
 def merge_meta(metadata_file, sample_ID_file, data_dir, outf):
-    id_map_dat = pd.read_csv(sample_ID_file).iloc[:,[0,7]]
+    id_map_dat = pd.read_csv(sample_ID_file)[["sample", "sample_title"]]
     clone_metadat = pd.read_csv(metadata_file, sep = "\t").iloc[:,:16]
     id_map_dat = id_map_dat.rename(
         columns={

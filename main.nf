@@ -71,7 +71,7 @@ include {UMAP_SAMPLES} from './modules/plots'
 def create_fastq_channel(LinkedHashMap row) {
     // create sample metadata
     def meta = [:]
-    meta.sample_id    = row.dna_sample_id
+    meta.sample_id    = row.sample_name
     meta.paired_end   = row.paired.toBoolean()
 
     // add path(s) of the fastq file(s) to the metadata
@@ -106,20 +106,6 @@ workflow {
         ch_samples
     )
     ch_metadata = CHECK_META_FILE.out.sample_metadata
-
-
-    // Channel
-    //     .fromPath(params.meta_file)
-    //     .splitCsv(header:true, sep:'\t')
-    //     // .map { row -> [ row.dna_sample_id, [ file(row.fastq, checkIfExists: true) ] ] }
-    //     .map { create_fastq_channel(it) }
-    //     .set { ch_raw_reads_trimgalore }
-
-    // Channel
-    //     .fromPath(params.meta_file)
-    //     .splitCsv(header:true, sep:'\t')
-    //     .map { row -> [ row.dna_sample_id, [ file(row.fasta, checkIfExists: true) ] ] }
-    //     .set { ch_clone_fasta_init }
 
     ch_metadata
         .splitCsv(header: true, sep:'\t')

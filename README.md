@@ -56,8 +56,9 @@ Explanation of parameters:
 ## Required input
 
 - __Metadata file__: tab-delimited (TSV) file, which must contain at least the following named columns:
+  - `rna_sample_id`: name of the RNA-Seq data file 
   - `dna_sample_id`: gene sequence sample identifier (must match the column name in the Panaroo gene presence/absence file)
-  - `sample_name`: strain name
+  - `sample_name`: unique identifier for the sample
   - `fastq1`: path to fastq file for RNA-Seq data
   - `fastq2`: (optional) path to 2nd fastq file for paired-end RNA-Seq data - leave blank for single-end data
   - `fasta`: path to fasta file containing gene sequences
