@@ -39,8 +39,7 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
         ## find split genes
         all_genes = (cg[sample_name].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
-        ## for each set of split genes, get the max value + add it to counts
-        split_dict = {} ## dict to store max expression val per gene
+        split_dict = {} 
         for split_set in split_genes:
             ind_genes = split_set.split(";")
             expr_vals = quant_dat[quant_dat[sample_name].isin(ind_genes)]
