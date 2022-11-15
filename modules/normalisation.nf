@@ -65,7 +65,7 @@ process DESEQ_NORMALISE_COUNTS {
         -c $merged_counts \
         -l $merged_lens \
         -g $gene_subset \
-        -p TRUE -t FALSE \
+        -p TRUE -t TRUE \
         -o ./
     """
 }
@@ -89,7 +89,7 @@ process TMM_NORMALISE_COUNTS {
         -c $merged_counts \
         -l $merged_lens \
         -g $gene_subset \
-        -p TRUE -t FALSE \
+        -p TRUE -t TRUE \
         -o ./
     """
 }
