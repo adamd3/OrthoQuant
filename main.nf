@@ -181,12 +181,14 @@ workflow {
             ch_gene_subset
         )
         ch_norm_counts = DESEQ_NORMALISE_COUNTS.out.norm_counts
+        ch_scaled_counts = DESEQ_NORMALISE_COUNTS.out.scaled_counts
     } else if (params.norm_method == 'TMM') {
         TMM_NORMALISE_COUNTS (
             ch_kallisto_merged_out,
             ch_gene_subset
         )
         ch_norm_counts = TMM_NORMALISE_COUNTS.out.norm_counts
+        ch_scaled_counts = TMM_NORMALISE_COUNTS.out.scaled_counts
     }
     // NB the scaled counts are log-transformed by default; the RPKM counts are not
 
