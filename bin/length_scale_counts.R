@@ -26,7 +26,7 @@ opt <- parse_args(opt_parser)
 counts_f <- opt$counts
 lengths_f <- opt$lengths
 gene_f <- opt$genes
-impute <- if(opt$impute == "TRUE") TRUE else FALS
+impute <- if(opt$impute == "TRUE") TRUE else FALSE
 perc <- if(opt$perc == "TRUE") TRUE else FALSE
 outf <- opt$outf
 

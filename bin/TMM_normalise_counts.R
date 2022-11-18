@@ -95,6 +95,13 @@ rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log tran
 ## convert rownames to column
 res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
 rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(counts_tab_scaled), "feature_id")
+
+write.table(
+    counts_tab_scaled, file.path(outdir,"raw_counts.tsv"), 
+    col.names = TRUE, row.names = FALSE,
+    sep = "\t", quote = FALSE
+)
 
 write.table(
     res_df, file.path(outdir,"norm_counts.tsv"),

@@ -74,7 +74,7 @@ counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 ## Replace missing values with 0
 counts_tab_scaled[is.na(counts_tab_scaled)] <- 0
 
-
+## get normalised counts
 colData <- data.frame(sample_name = colnames(counts_tab_scaled))
 
 dds <- suppressMessages(DESeqDataSetFromMatrix(
@@ -100,7 +100,13 @@ if(isTRUE(log)){
 ## convert rownames to column
 res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
 rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(counts_tab_scaled), "feature_id")
 
+write.table(
+    counts_tab_scaled, file.path(outdir,"raw_counts.tsv"), 
+    col.names = TRUE, row.names = FALSE,
+    sep = "\t", quote = FALSE
+)
 
 write.table(
     res_df, file.path(outdir,"norm_counts.tsv"),

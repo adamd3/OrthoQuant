@@ -163,14 +163,14 @@ workflow {
     )
     ch_kallisto_merged_out = MERGE_COUNTS_AND_LENS.out.kallisto_merged_out
 
-    /*
-     *  Scale counts to median gene length across strains
-     */
-    LENGTH_SCALE_COUNTS (
-        ch_kallisto_merged_out,
-        ch_gene_subset
-    )
-    ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
+    // /*
+    //  *  Scale counts to median gene length across strains
+    //  */
+    // LENGTH_SCALE_COUNTS (
+    //     ch_kallisto_merged_out,
+    //     ch_gene_subset
+    // )
+    // ch_scaled_counts = LENGTH_SCALE_COUNTS.out.scaled_counts
 
     /*
      *  Get size-factor-scaled counts

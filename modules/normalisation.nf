@@ -23,28 +23,28 @@ process SUBSET_GENES {
 }
 
 
-process LENGTH_SCALE_COUNTS {
-    tag "$merged_lens"
-    label 'process_medium'
-    publishDir "${params.outdir}/gene_counts", mode: 'copy'
+// process LENGTH_SCALE_COUNTS {
+//     tag "$merged_lens"
+//     label 'process_medium'
+//     publishDir "${params.outdir}/gene_counts", mode: 'copy'
 
-    input:
-    tuple path(merged_counts), path(merged_lens)
-    path gene_subset
+//     input:
+//     tuple path(merged_counts), path(merged_lens)
+//     path gene_subset
 
-    output:
-    path 'raw_counts.tsv', emit: scaled_counts
+//     output:
+//     path 'raw_counts.tsv', emit: scaled_counts
 
-    script:
-    """
-    length_scale_counts.R \
-        -c $merged_counts \
-        -l $merged_lens \
-        -g $gene_subset \
-        -i TRUE -p TRUE \
-        -o raw_counts.tsv
-    """
-}
+//     script:
+//     """
+//     length_scale_counts.R \
+//         -c $merged_counts \
+//         -l $merged_lens \
+//         -g $gene_subset \
+//         -i TRUE -p TRUE \
+//         -o raw_counts.tsv
+//     """
+// }
 
 process DESEQ_NORMALISE_COUNTS {
     tag "$merged_counts"
