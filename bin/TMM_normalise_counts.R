@@ -3,7 +3,7 @@
 library(optparse)
 library(DESeq2)
 library(edgeR)
-library(tibble)
+library(tidyverse)
 
 option_list <- list(
     make_option(c("-c", "--counts"), type="character", default=NULL,
@@ -13,7 +13,7 @@ option_list <- list(
     make_option(c("-g", "--genes"), type="character", default=NULL,
         help="core gene subset to be used", metavar="character"),
     make_option(c("-p", "--perc"), type="character", default=NULL,
-        help="was filtering based on percentage presence of gene?", metavar="character"),
+        help="filter to core genes?", metavar="character"),
     make_option(c("-t", "--log_transform"), type="character", default=NULL,
         help="log transform the counts? default = FALSE", metavar="character"),
     make_option(c("-o", "--outdir"), type="character", default=NULL,
@@ -30,72 +30,71 @@ perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir
 
+
 ## Read data
-counts_tab <- read.csv(
-    counts_f, header = TRUE, na.strings=c("","NA"), sep = "\t",
-    stringsAsFactors = FALSE
-)
-lengths_tab <- read.csv(
-    lengths_f, header = TRUE, na.strings=c("","NA"), sep = "\t",
-    stringsAsFactors = FALSE
-)
-core_genome <- read.csv(
-    gene_f, header = TRUE, na.strings=c("","NA"), sep = "\t",
-    stringsAsFactors = FALSE
-)
+counts_tab <- suppressMessages(read_tsv(counts_f))
+lengths_tab <- suppressMessages(read_tsv(lengths_f))
+core_genome <- suppressMessages(read_tsv(gene_f))
 
+lengths_tab <- lengths_tab[match(counts_tab$Gene, lengths_tab$Gene),]
 
-if(isFALSE(perc)){
-    colnames(core_genome) <- gsub("X", "ST_", colnames(core_genome))
-    na_count <- sapply(core_genome, function(y) sum(length(which(is.na(y)))))
-    n <- 1
-    least_na <- names(sort(na_count)[1:n])
-    core_genes <- na.omit(core_genome[least_na])[,1]
-} else {
-    core_genes <- core_genome$gene
-}
-
-colnames(counts_tab)[1] <- colnames(lengths_tab)[1] <- "Gene"
-
-counts_tab <- subset(counts_tab, Gene %in% core_genes)
-lengths_tab <- subset(lengths_tab, Gene %in% core_genes)
-
-rownames(counts_tab) <- rownames(lengths_tab) <- counts_tab$Gene
-counts_tab$Gene <- lengths_tab$Gene <- NULL
-
-lengths_tab <- lengths_tab[match(rownames(counts_tab), rownames(lengths_tab)),]
-
+gene_ids <- counts_tab$Gene
+counts_tab <- data.frame(counts_tab[,2:ncol(counts_tab)])
+lengths_tab <- data.frame(lengths_tab[,2:ncol(lengths_tab)])
+rownames(counts_tab) <- rownames(lengths_tab) <- gene_ids
 
 ## scale counts to reads per median gene length
 median_lens <- rowMedians(as.matrix(lengths_tab), na.rm=TRUE)
+names(median_lens) <- gene_ids
+
 counts_tab_scaled <- (counts_tab/lengths_tab)
 counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 
-## Replace missing values with 0
-counts_tab_scaled[is.na(counts_tab_scaled)] <- 0
+
+colData <- data.frame(sample_name = colnames(counts_tab_scaled))
+
+## subset to core genes
+counts_tab_sub <- subset(counts_tab_scaled, rownames(
+    counts_tab_scaled) %in% core_genome$gene)
+median_sub <- median_lens[rownames(counts_tab_sub)]
+
+## replace missing values with 0
+counts_tab_sub[is.na(counts_tab_sub)] <- 0
 
 
-## get CPM
-y <- DGEList(counts = counts_tab_scaled)
+
+## get size factors per sample, based on core genes
+y <- DGEList(
+    counts = counts_tab_sub,
+    genes = data.frame(gene.length = median_sub)
+)
 y <- calcNormFactors(y, method = "TMM")
 libSizes <- y$samples$lib.size
-res_df <- as.data.frame(cpm(
-    y, log = log, lib.size = (libSizes)*(y$samples$norm.factors)
-))
+size_factors <- y$samples$norm.factors
 
-## get RPKM
-y <- DGEList(
-    counts = counts_tab_scaled,
-    genes = data.frame(gene.length = median_lens)
-)
-y <- calcNormFactors(y)
-# rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log))
-rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE))  ## update: don't log transform the RPKM vals
+## NOTE: = effectiveLibSizes(y) = (libSizes)*size_factors
+
+if(isTRUE(perc)){
+    ## get size factor-scaled counts
+    res_df <- as.data.frame(cpm(y, log = log))
+    ## get RPKM
+    rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE)) 
+
+} else {
+    ## get size factor-scaled counts
+    res_df <- sweep(counts_tab_scaled, 2, size_factors, `/`)
+    ## get RPKM values
+    sf <- colSums(counts_tab_scaled, na.rm=TRUE)/1e6
+    rpkm_df <- sweep(counts_tab_scaled, 2, sf, `/`)
+}
+
+
+
 
 ## convert rownames to column
-res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
-rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
-counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(counts_tab_scaled), "feature_id")
+res_df <- tibble::rownames_to_column(res_df, "feature_id")
+rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(counts_tab_scaled, "feature_id")
 
 write.table(
     counts_tab_scaled, file.path(outdir,"raw_counts.tsv"), 

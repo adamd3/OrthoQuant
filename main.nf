@@ -114,7 +114,7 @@ workflow {
 
 
     /*
-     *  Get the subset of genes to be included in the analysis
+     *  Get the subset of core genes
      */
     SUBSET_GENES (
         ch_gpa_file,
