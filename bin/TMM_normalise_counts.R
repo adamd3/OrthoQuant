@@ -30,7 +30,6 @@ perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir
 
-
 ## Read data
 counts_tab <- suppressMessages(read_tsv(counts_f))
 lengths_tab <- suppressMessages(read_tsv(lengths_f))
@@ -69,10 +68,13 @@ y <- DGEList(
     genes = data.frame(gene.length = median_sub)
 )
 y <- calcNormFactors(y, method = "TMM")
-libSizes <- y$samples$lib.size
-size_factors <- y$samples$norm.factors
 
-## NOTE: = effectiveLibSizes(y) = (libSizes)*size_factors
+size_factors <- effectiveLibSizes(y)
+
+## NOTE: = effectiveLibSizes(y) = (y$samples$lib.size)*(y$samples$norm.factors)
+
+## NOTE: the output of edgeR effectiveLibSizes() is equivalent to the output of 
+## sizeFactors() in DESeq2; see: https://support.bioconductor.org/p/46779/
 
 if(isTRUE(perc)){
     ## get size factor-scaled counts
