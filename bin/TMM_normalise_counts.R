@@ -88,6 +88,12 @@ if(isTRUE(perc)){
     ## get RPKM values
     sf <- colSums(counts_tab_scaled, na.rm=TRUE)/1e6
     rpkm_df <- sweep(counts_tab_scaled, 2, sf, `/`)
+
+    if(isTRUE(log)){
+        res_df <- log2(res_df+1)
+        # rpkm_df <- log2(rpkm_df+1) ## update: don't log transform the RPKM vals
+    }
+
 }
 
 
