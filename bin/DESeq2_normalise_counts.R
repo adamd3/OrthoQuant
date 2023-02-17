@@ -67,7 +67,7 @@ dds <- suppressMessages(DESeqDataSetFromMatrix(
 ))
 
 dds <- estimateSizeFactors(dds)
-size_factors <- sizeFactors(dds)
+size_factors2 <- sizeFactors(dds)
 
 if(isTRUE(perc)){
     ## get size factor-scaled counts
@@ -95,10 +95,10 @@ if(isTRUE(log)){
 }
 
 ## convert rownames to column
-res_df <- tibble::rownames_to_column(res_df, "feature_id")
-rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
-counts_tab_scaled <- tibble::rownames_to_column(
-    counts_tab_scaled, "feature_id")
+res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
+rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(
+    counts_tab_scaled), "feature_id")
 
 write.table(
     counts_tab_scaled, file.path(outdir,"raw_counts.tsv"), 

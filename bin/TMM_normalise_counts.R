@@ -30,6 +30,7 @@ perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir
 
+
 ## Read data
 counts_tab <- suppressMessages(read_tsv(counts_f))
 lengths_tab <- suppressMessages(read_tsv(lengths_f))
@@ -96,13 +97,11 @@ if(isTRUE(perc)){
 
 }
 
-
-
-
 ## convert rownames to column
-res_df <- tibble::rownames_to_column(res_df, "feature_id")
-rpkm_df <- tibble::rownames_to_column(rpkm_df, "feature_id")
-counts_tab_scaled <- tibble::rownames_to_column(counts_tab_scaled, "feature_id")
+res_df <- tibble::rownames_to_column(as.data.frame(res_df), "feature_id")
+rpkm_df <- tibble::rownames_to_column(as.data.frame(rpkm_df), "feature_id")
+counts_tab_scaled <- tibble::rownames_to_column(as.data.frame(
+    counts_tab_scaled), "feature_id")
 
 write.table(
     counts_tab_scaled, file.path(outdir,"raw_counts.tsv"), 
