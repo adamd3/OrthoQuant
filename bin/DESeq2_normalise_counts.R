@@ -67,7 +67,7 @@ dds <- suppressMessages(DESeqDataSetFromMatrix(
 ))
 
 dds <- estimateSizeFactors(dds)
-size_factors2 <- sizeFactors(dds)
+size_factors <- sizeFactors(dds)
 
 if(isTRUE(perc)){
     ## get size factor-scaled counts
