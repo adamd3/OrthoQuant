@@ -39,7 +39,9 @@ norm_counts <- read.table(
 )
 rownames(norm_counts) <- norm_counts[["feature_id"]]
 norm_counts[["feature_id"]] <- NULL
-norm_counts <- log2(norm_counts+1)
+# norm_counts <- log2(norm_counts+1)
+
+norm_counts <- na.omit(norm_counts)  ## removes accessory genes 
 
 clone_meta <- read.table(
     meta_f, header = TRUE, sep = "\t", stringsAsFactors = FALSE

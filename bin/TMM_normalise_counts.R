@@ -81,7 +81,7 @@ if(isTRUE(perc)){
     ## get size factor-scaled counts
     res_df <- as.data.frame(cpm(y, log = log))
     ## get RPKM
-    rpkm_df <- as.data.frame(edgeR::rpkm(y, log = FALSE)) 
+    rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log)) 
 
 } else {
     ## get size factor-scaled counts
@@ -92,7 +92,7 @@ if(isTRUE(perc)){
 
     if(isTRUE(log)){
         res_df <- log2(res_df+1)
-        # rpkm_df <- log2(rpkm_df+1) ## update: don't log transform the RPKM vals
+        rpkm_df <- log2(rpkm_df+1) 
     }
 
 }
