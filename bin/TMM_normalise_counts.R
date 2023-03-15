@@ -80,8 +80,10 @@ if(isTRUE(perc)){
     res_df <- sweep(counts_tab_perc, 2, size_factors, `/`)
 
     ## get RPKM values
-    gene_sf <- (median_sub/1e3) * (colSums(counts_tab_perc, na.rm=TRUE)/1e6)
-    rpkm_df <- sweep(counts_tab_perc, 1, gene_sf, `/`)
+    lib_sf <- (colSums(counts_tab_perc, na.rm=TRUE)/1e6)
+    gene_sf <- sapply(median_sub, function(l){ l/1e3 * lib_sf })
+    gene_sf <- as.data.frame(t(gene_sf))
+    rpkm_df <- counts_tab_perc / gene_sf
 
 
 } else {
@@ -90,8 +92,10 @@ if(isTRUE(perc)){
     res_df <- sweep(counts_tab_scaled, 2, size_factors, `/`)
 
     ## get RPKM values
-    gene_sf <- (median_lens/1e3) * (colSums(counts_tab_scaled, na.rm=TRUE)/1e6)
-    rpkm_df <- sweep(counts_tab_scaled, 1, gene_sf, `/`)
+    lib_sf <- (colSums(counts_tab_scaled, na.rm=TRUE)/1e6)
+    gene_sf <- sapply(median_lens, function(l){ l/1e3 * lib_sf })
+    gene_sf <- as.data.frame(t(gene_sf))
+    rpkm_df <- counts_tab_scaled / gene_sf
 
 }
 
