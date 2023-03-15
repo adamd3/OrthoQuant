@@ -53,21 +53,11 @@ counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 
 colData <- data.frame(sample_name = colnames(counts_tab_scaled))
 
-## subset to core genes
-counts_tab_sub <- subset(counts_tab_scaled, rownames(
-    counts_tab_scaled) %in% core_genome$gene)
-median_sub <- median_lens[rownames(counts_tab_sub)]
 
-## replace missing values with 0
-counts_tab_sub[is.na(counts_tab_sub)] <- 0
+# get scaling factors from core gene set
+counts_tab_core <- na.omit(counts_tab_scaled)
 
-
-
-## get size factors per sample, based on core genes
-y <- DGEList(
-    counts = counts_tab_sub,
-    genes = data.frame(gene.length = median_sub)
-)
+y <- DGEList(counts = counts_tab_core)
 y <- calcNormFactors(y, method = "TMM")
 
 size_factors <- effectiveLibSizes(y)
@@ -78,23 +68,36 @@ size_factors <- effectiveLibSizes(y)
 ## sizeFactors() in DESeq2; see: https://support.bioconductor.org/p/46779/
 
 if(isTRUE(perc)){
+
+    ## subset to `perc` genes
+    counts_tab_perc <- subset(counts_tab_scaled, rownames(
+         counts_tab_scaled) %in% core_genome$gene)
+    counts_tab_perc[is.na(counts_tab_perc)] <- 0
+
+    median_sub <- median_lens[rownames(counts_tab_perc)]
+
     ## get size factor-scaled counts
-    res_df <- as.data.frame(cpm(y, log = log))
-    ## get RPKM
-    rpkm_df <- as.data.frame(edgeR::rpkm(y, log = log)) 
+    res_df <- sweep(counts_tab_perc, 2, size_factors, `/`)
+
+    ## get RPKM values
+    gene_sf <- (median_sub/1e3) * (colSums(counts_tab_perc, na.rm=TRUE)/1e6)
+    rpkm_df <- sweep(counts_tab_perc, 1, gene_sf, `/`)
+
 
 } else {
+
     ## get size factor-scaled counts
     res_df <- sweep(counts_tab_scaled, 2, size_factors, `/`)
+
     ## get RPKM values
-    sf <- colSums(counts_tab_scaled, na.rm=TRUE)/1e6
-    rpkm_df <- sweep(counts_tab_scaled, 2, sf, `/`)
+    gene_sf <- (median_lens/1e3) * (colSums(counts_tab_scaled, na.rm=TRUE)/1e6)
+    rpkm_df <- sweep(counts_tab_scaled, 1, gene_sf, `/`)
 
-    if(isTRUE(log)){
-        res_df <- log2(res_df+1)
-        rpkm_df <- log2(rpkm_df+1) 
-    }
+}
 
+if(isTRUE(log)){
+    res_df <- log2(res_df+1)
+    rpkm_df <- log2(rpkm_df+1) 
 }
 
 ## convert rownames to column

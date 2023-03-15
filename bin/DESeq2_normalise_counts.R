@@ -29,6 +29,11 @@ perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir
 
+counts_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/kallisto_merged_all_inc_split.tsv'
+lengths_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/kallisto_merged_all_lens_inc_split.tsv' 
+gene_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/acc_counts/core_ST.tsv' 
+perc <- FALSE 
+log <- TRUE 
 
 ## Read data
 counts_tab <- suppressMessages(read_tsv(counts_f))
@@ -52,17 +57,11 @@ counts_tab_scaled <- sweep(counts_tab_scaled, 1, median_lens, "*")
 
 colData <- data.frame(sample_name = colnames(counts_tab_scaled))
 
-## subset to core genes
-counts_tab_sub <- subset(counts_tab_scaled, rownames(
-    counts_tab_scaled) %in% core_genome$gene)
-median_sub <- median_lens[rownames(counts_tab_sub)]
+# get scaling factors from core gene set
+counts_tab_core <- na.omit(counts_tab_scaled)
 
-## replace missing values with 0
-counts_tab_sub[is.na(counts_tab_sub)] <- 0
-
-## get size factors per sample, based on core genes
 dds <- suppressMessages(DESeqDataSetFromMatrix(
-    countData = round(counts_tab_sub),
+    countData = round(counts_tab_core),
     colData = colData, design = ~ 1
 ))
 
@@ -70,21 +69,28 @@ dds <- estimateSizeFactors(dds)
 size_factors <- sizeFactors(dds)
 
 if(isTRUE(perc)){
+    ## subset to `perc` gene set
+    counts_tab_perc <- subset(counts_tab_scaled, rownames(
+         counts_tab_scaled) %in% core_genome$gene)
+    counts_tab_perc[is.na(counts_tab_perc)] <- 0
+
+    median_sub <- median_lens[rownames(counts_tab_perc)]
+
     ## get size factor-scaled counts
-    res_df <- counts(dds, normalized=TRUE)
-    ## this is just dividing each column of counts(dds) by sizeFactors(dds)
-    ## see: https://support.bioconductor.org/p/66067/
+    res_df <- sweep(counts_tab_perc, 2, size_factors, `/`)
 
     ## get RPKM values
-    mcols(dds)$basepairs <- median_sub
-    rpkm_df <- fpkm(dds, robust = TRUE)
+    gene_sf <- (median_sub/1e3) * (colSums(counts_tab_perc, na.rm=TRUE)/1e6)
+    rpkm_df <- sweep(counts_tab_perc, 1, gene_sf, `/`)
+
 
 } else {
     ## get size factor-scaled counts
     res_df <- sweep(counts_tab_scaled, 2, size_factors, `/`)
+
     ## get RPKM values
-    sf <- colSums(counts_tab_scaled, na.rm=TRUE)/1e6
-    rpkm_df <- sweep(counts_tab_scaled, 2, sf, `/`)
+    gene_sf <- (median_lens/1e3) * (colSums(counts_tab_scaled, na.rm=TRUE)/1e6)
+    rpkm_df <- sweep(counts_tab_scaled, 1, gene_sf, `/`)
 }
 
 
