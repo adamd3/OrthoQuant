@@ -29,11 +29,6 @@ perc <- if(opt$perc == "TRUE") TRUE else FALSE
 log <- if(opt$log_transform == "TRUE") TRUE else FALSE
 outdir <- opt$outdir
 
-# counts_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/kallisto_merged_all_inc_split.tsv'
-# lengths_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/kallisto_merged_all_lens_inc_split.tsv' 
-# gene_f <- '/projects/pseudomonas_transcriptomics/storage/adam_out/pseudomonas_transcriptomics/acc_counts/core_ST.tsv' 
-# perc <- FALSE 
-# log <- TRUE 
 
 ## Read data
 counts_tab <- suppressMessages(read_tsv(counts_f))
@@ -67,6 +62,8 @@ dds <- suppressMessages(DESeqDataSetFromMatrix(
 
 dds <- estimateSizeFactors(dds)
 size_factors <- sizeFactors(dds)
+
+
 
 if(isTRUE(perc)){
     ## subset to `perc` gene set

@@ -67,6 +67,9 @@ size_factors <- effectiveLibSizes(y)
 ## NOTE: the output of edgeR effectiveLibSizes() is equivalent to the output of 
 ## sizeFactors() in DESeq2; see: https://support.bioconductor.org/p/46779/
 
+
+
+
 if(isTRUE(perc)){
 
     ## subset to `perc` genes
