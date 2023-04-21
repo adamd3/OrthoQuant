@@ -30,7 +30,6 @@ def merge_counts(gene_presence_absence, metadata_merged, kallisto_dir, outf):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     colnames = csv_data.columns.values.tolist()
-    gene_names = csv_data.iloc[:,0].tolist()
     metadata = metadata[metadata['dna_sample_id'].isin(colnames)]
     quant_dfs = []
     for index, row in metadata.iterrows():
@@ -42,7 +41,7 @@ def merge_counts(gene_presence_absence, metadata_merged, kallisto_dir, outf):
         quant_dat = quant_dat[["target_id", "eff_length"]]
         quant_dat = quant_dat.rename(columns={'target_id': sample_name})
         cg = csv_data[["Gene", dna_sample_id]]
-        cg.columns.values[1] = sample_name
+        cg = cg.rename(columns={dna_sample_id: sample_name})
         all_genes = (cg[sample_name].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
         split_dict = {}
