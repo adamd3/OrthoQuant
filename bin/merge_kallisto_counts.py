@@ -18,7 +18,7 @@ def parse():
     )
     parser.add_argument(
         "--kallisto_dir",
-        help = "Directory containing kallisto results"
+        help = "Directory containing kallisto results",
         default = "./"
     )
     parser.add_argument("--outf", help = "File for results")
