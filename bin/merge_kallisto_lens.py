@@ -16,11 +16,17 @@ def parse():
         "--metadata_merged",
         help = "TSV file mapping clone names with sequence data sample names"
     )
+    parser.add_argument(
+        "--kallisto_dir",
+        help = "Directory containing kallisto results"
+        default = "./"
+    )
     parser.add_argument("--outf", help="File for results")
     args = parser.parse_args()
     merge_counts(**vars(args))
 
-def merge_counts(gene_presence_absence, metadata_merged, outf):
+
+def merge_counts(gene_presence_absence, metadata_merged, kallisto_dir, outf):
     csv_data = pd.read_csv(gene_presence_absence, low_memory=False)
     metadata = pd.read_csv(metadata_merged, sep = "\t")
     colnames = csv_data.columns.values.tolist()
@@ -30,22 +36,19 @@ def merge_counts(gene_presence_absence, metadata_merged, outf):
     for index, row in metadata.iterrows():
         sample_name = row['sample_name']
         dna_sample_id = row['dna_sample_id']
-        quant_file = os.path.join('kallisto_'+sample_name, 'abundance.tsv')
+        quant_file = os.path.join(
+            kallisto_dir, 'kallisto_'+sample_name, 'abundance.tsv')
         quant_dat = pd.read_csv(quant_file, sep = "\t")
         quant_dat = quant_dat[["target_id", "eff_length"]]
         quant_dat = quant_dat.rename(columns={'target_id': sample_name})
         cg = csv_data[["Gene", dna_sample_id]]
         cg.columns.values[1] = sample_name
-        ## find split genes
         all_genes = (cg[sample_name].dropna()).tolist()
         split_genes = [g for g in all_genes if ";" in str(g)]
-        # dict_file = os.path.join(dict_dir, sample_name+'.pickle')
-        # max_expr = pickle.load(open(dict_file, "rb")) ## max expressed of split genes
         split_dict = {}
         for split_set in split_genes:
             ind_genes = split_set.split(";")
             expr_vals = quant_dat[quant_dat[sample_name].isin(ind_genes)]
-            ## take the mean length across split genes
             mean_len = expr_vals["eff_length"].mean()
             split_dict[split_set] = mean_len
         quant_split = pd.DataFrame([split_dict]).transpose()
