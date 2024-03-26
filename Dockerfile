@@ -14,11 +14,13 @@ ADD https://raw.githubusercontent.com/adamd3/OrthoQuant/main/requirements.txt .
 COPY requirements.txt /tmp
 WORKDIR /tmp
 
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates \
-        curl libssl-dev libcurl4-openssl-dev libxml2-dev \
-        python3-numpy python3-pip gawk pigz r-base-dev fastqc \
-        trim-galore kallisto && \
+    build-essential \
+    curl libssl-dev libcurl4-openssl-dev libxml2-dev \
+    python3-numpy python3-pip gawk pigz r-base-dev fastqc \
+    trim-galore kallisto && \
     apt-get clean autoclean
 
 RUN pip install --no-cache-dir -r requirements.txt
