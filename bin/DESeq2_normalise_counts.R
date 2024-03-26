@@ -2,7 +2,15 @@
 
 library(optparse)
 library(DESeq2)
-library(tidyverse)
+if (!require("tidyverse")) {
+    lapply(c("readr", "tibble", "purrr", "tidyr", "stringr", "ggplot2"),
+        library,
+        character.only = TRUE
+    )
+} else {
+    library(tidyverse)
+}
+
 
 option_list <- list(
     make_option(c("-c", "--counts"),

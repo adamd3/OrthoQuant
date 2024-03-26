@@ -30,6 +30,7 @@ RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.rstudio.com'; \
 
 RUN R -e 'install.packages(c(  \
     "optparse", "RColorBrewer", "reshape2", "tidyverse",   \
+    "readr", "tibble", "purrr", "tidyr", "stringr", "ggplot2", \
     "scales", "pheatmap", "matrixstats", "umap", "BiocManager"))'
 
 RUN R -e 'BiocManager::install(c("edgeR", "DESeq2"))'
